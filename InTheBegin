@@ -1,0 +1,143 @@
+ORM::SqlBuilder *b = ORM::SqlBuilder::сreateSqliteBuilder();
+
+ORM::Query r = b.createTable("table")
+.addField("id", ORM::INT, ORD::DEFAULT(0))
+.addField("name", ORM::TEXT, ORM::UNIQUE)
+.addField("value", ORM::DOUBLE)
+.exec();
+
+1. Собирается обобщенная модель запроса (общий интерфейс - класс на каждый тип)
+2. Передаётся в конкретный SqlBuilder 
+3. конкретный SqlBuilder создаёт строковое представление запроса 
+
+ORM::Query - тонкая оболочка над qt-шным результатом запроса
+
+class TableQuery
+{
+TableQuery(ORM::SqlBuilder *builder);
+ORM::Query exec()
+{
+builder->parse(this);
+if(!builder->isComplete())
+{
+	return builder->error();
+}
+return builder->exec();
+}
+}
+
+class CreateTableQuery : public TableQuery;
+class SelectTableQuery : public TableQuery;
+
+
+ORM::Query r = b.createTable("table") // return CreateTableQuery
+.addField("id",ORM::INT, ORM::NOT_NULL, ORM::AUTOINCREMENT)
+.addField("name", ORM::TEXT)
+.addField("value"), ORM::DOUBLE)
+.addPrimaryKey("id", "name")
+.addForeignKey("table_2", "field") // ?
+.exec();
+
+enum ColumnType
+{
+	Int,
+	Double,
+	Text,
+	Date,
+	Blob
+}
+
+ColumnConstraint
+{
+enum{
+NOT_NULL,
+AUTOINCREMENT,
+UNIQUE}
+
+DEFAULT(var)
+
+}
+
+
+
+ORM::Query r = b
+					.select() // return SelectQuery
+					.from("table_name")
+					.where(ORM::equal("name", "jack"))
+					.prepare()
+					.exec();
+					
+ORM::Query r = b
+					.select("name")
+					.distinct("name")
+					.from("table_name");
+					
+ORM::Query r = b
+					.select("name", ORM::COUNT("name"))
+					.from("table_name");
+					
+ORM::Query r = b
+					.select("name", ORM::COUNT("name"))
+					.from("table_name");
+					
+ORM::Query r = b.select(ORM::MIN("count")).from("table_name");
+
+ORM::Query r = b.select(ORM::ALL).from("table_name").where(ORM::IN("table_name.f1", b.select("f_ids").from("table_name_2")));
+
+ORM::Query r = b.select("s")
+.from("table_name")
+.where(ORM::EXISTS(b.select("column_name")
+					.from("table_name_2")
+					.where(ORM::NOT_IN("name", {"jack", "gil", "123"}))));
+
+					
+ORM::Query r = b
+					.select("name", ORM::COUNT("name"))
+					.from("table_name")
+					.where(ORM::equal("id", ORM::BINDED("id")))
+					.prepare()
+					.bind("id", "33")
+					.exec();
+					
+
+r.bind("id", "33").exec();
+
+					
+if(r.isComplete())
+{
+	ORM::QueryResult res = r.result();
+	r.columns();
+	while(res.next())
+	{
+	 qInfo() << res.record(); 
+	}
+}
+else
+{
+	qInfo() << r.errors();
+}
+
+
+ORM::Query r = b
+					.select(ORM::COUNT("table1.ids"), ORM::ALL("table1"), "table2.ids")
+					.from("table1")
+					.join("table2", ORM::LEFT_JOIN)
+					.on(ORM::OR(ORM:LESS("table1.date", "table2.date"), ORM::MORE("table1.ids", "table2.ids")))
+					.where(ORM::equal("table1.name", "jack"));
+					
+					
+
+      .groupBy(AUTHOR.FIRST_NAME, AUTHOR.LAST_NAME)
+      .having(count().gt(5))
+      .orderBy(AUTHOR.LAST_NAME.asc().nullsFirst())
+	  .indexedBy("index_name")
+      .limit(2)
+      .offset(1)
+					
+b.delete().from("table").where(ORM::LESS("date", QDate(2017, 5, 5)));
+
+
+ORM::Query r  = b.insert("f1", "f2", "f3").into("table_name").values(ORM::BINDED("v1"),ORM::BINDED("v2"),ORM::BINDED("v3")).prepare();
+r.bind("f1", var1).bind("f2", var2).bind("f3", var3).exec();
+  
+
