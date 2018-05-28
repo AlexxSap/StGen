@@ -1,11 +1,5 @@
 ORM::SqlBuilder *b = ORM::SqlBuilder::сreateSqliteBuilder();
 
-ORM::Query r = b.createTable("table")
-.addField("id", ORM::INT, ORD::DEFAULT(0))
-.addField("name", ORM::TEXT, ORM::UNIQUE)
-.addField("value", ORM::DOUBLE)
-.exec();
-
 1. Собирается обобщенная модель запроса (общий интерфейс - класс на каждый тип)
 2. Передаётся в конкретный SqlBuilder 
 3. конкретный SqlBuilder создаёт строковое представление запроса 
@@ -29,15 +23,6 @@ return builder->exec();
 class CreateTableQuery : public TableQuery;
 class SelectTableQuery : public TableQuery;
 
-
-ORM::Query r = b.createTable("table") // return CreateTableQuery
-.addField("id",ORM::INT, ORM::NOT_NULL, ORM::AUTOINCREMENT)
-.addField("name", ORM::TEXT)
-.addField("value"), ORM::DOUBLE)
-.addPrimaryKey("id", "name")
-.addForeignKey("table_2", "field") // ?
-.exec();
-
 enum ColumnType
 {
 	Int,
@@ -58,51 +43,7 @@ DEFAULT(var)
 
 }
 
-
-
-ORM::Query r = b
-					.select() // return SelectQuery
-					.from("table_name")
-					.where(ORM::equal("name", "jack"))
-					.prepare()
-					.exec();
-					
-ORM::Query r = b
-					.select("name")
-					.distinct("name")
-					.from("table_name");
-					
-ORM::Query r = b
-					.select("name", ORM::COUNT("name"))
-					.from("table_name");
-					
-ORM::Query r = b
-					.select("name", ORM::COUNT("name"))
-					.from("table_name");
-					
-ORM::Query r = b.select(ORM::MIN("count")).from("table_name");
-
-ORM::Query r = b.select(ORM::ALL).from("table_name").where(ORM::IN("table_name.f1", b.select("f_ids").from("table_name_2")));
-
-ORM::Query r = b.select("s")
-.from("table_name")
-.where(ORM::EXISTS(b.select("column_name")
-					.from("table_name_2")
-					.where(ORM::NOT_IN("name", {"jack", "gil", "123"}))));
-
-					
-ORM::Query r = b
-					.select("name", ORM::COUNT("name"))
-					.from("table_name")
-					.where(ORM::equal("id", ORM::BINDED("id")))
-					.prepare()
-					.bind("id", "33")
-					.exec();
-					
-
-r.bind("id", "33").exec();
-
-					
+				
 if(r.isComplete())
 {
 	ORM::QueryResult res = r.result();
@@ -118,26 +59,66 @@ else
 }
 
 
-ORM::Query r = b
-					.select(ORM::COUNT("table1.ids"), ORM::ALL("table1"), "table2.ids")
-					.from("table1")
-					.join("table2", ORM::LEFT_JOIN)
-					.on(ORM::OR(ORM:LESS("table1.date", "table2.date"), ORM::MORE("table1.ids", "table2.ids")))
-					.where(ORM::equal("table1.name", "jack"));
-					
-					
+1. Select
+1.1. all	
+	select(ALL).from("tableName");
+	select().from("tableName");
 
-      .groupBy(AUTHOR.FIRST_NAME, AUTHOR.LAST_NAME)
-      .having(count().gt(5))
-      .orderBy(AUTHOR.LAST_NAME.asc().nullsFirst())
+1.2. fields
+	select("f1", "f2").from("tableName");
+
+1.3. with case 
+	select("f1", "f2").from("tableName").where(notIn("f3", {"jack", "gil", "123"}));
+	select("f1", "f2").from("tableName").where(less("f3", 33));
+	select("f1", "f2").from("tableName").where(more("f3", Date(2017,3,3)));
+	select("f1", "f2").from("tableName").where(equal("f3", bind("id"))).indexedBy("index_name");
+	
+	select("f1", "f2").from("tableName").where(and(equal("f3", bind("id")), less("f4", bind("d")));
+
+1.4. with first, last, distinct
+	select(first("f1")).from("tableName");
+
+1.5. with limit and offset, etc
+      .groupBy("f1", "f2")
+      .having(more(count(), 2))
+      .orderBy(asc("f1"))
 	  .indexedBy("index_name")
       .limit(2)
       .offset(1)
-					
-b.delete().from("table").where(ORM::LESS("date", QDate(2017, 5, 5)));
+	  
+1.6. with ag. function (max, min, count)
+	select("f1", max("f2")).form("name").groupBy("f1");
+
+1.7. with join
+	select(as("A.f1", "af1"), "B.f1").form("table1", "A").innerJoin("table2", "B").on(...)
+
+2. Insert
+2.1. simple
+	insert("f1", "f2").into("table").values("a", "b");
+	insert("f1", "f2").into("table").values(bind("a"), bind("b"));
+	
+2.2. batch
+	insert("f1", "f2").into("table").values("a1", "b1").values("a2", "b2").values("a3", "b3");
+2.3. from select
+
+3. Delete
+	like select delete().from("tableName")......;
+
+4. create table
+	createTable("tableName").addKeyField("f1", INT).addField("f2", DATE);
+	createTable("tableName").addField("f1", INT).addField("f2", DATE).setKey("f1", "f2");
+	createTable("tableName").addField("f1", INT, {key, notNull, autoIncrement}).addField("f2", DATE);
+
+select(...).from(...).prepare().bindValue(...).bindValue(...).exec()
+
+select(...) - SelectQuery
+select(...).from(...) - SelectQuery
+select(...).from(...).prepare() - PreparedQuery
+select(...).from(...).prepare().bindValue(...).bindValue(...) - BindedQuery
+select(...).from(...).prepare().bindValue(...).bindValue(...).exec() - Result
 
 
-ORM::Query r  = b.insert("f1", "f2", "f3").into("table_name").values(ORM::BINDED("v1"),ORM::BINDED("v2"),ORM::BINDED("v3")).prepare();
-r.bind("f1", var1).bind("f2", var2).bind("f3", var3).exec();
+
+
   
 
