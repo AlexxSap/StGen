@@ -7,8 +7,7 @@ template <class TestClass>
 int runTest(const QStringList &args = QStringList())
 {
     TestClass test;
-    return QTest::qExec(&test,
-                        args);
+    return QTest::qExec(&test, args);
 }
 
 int main(int argc, char *argv[])
