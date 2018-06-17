@@ -53,12 +53,12 @@ private:
 class AbstractSqlBuilder
 {
 public:
-    virtual SelectQuery select(ColumnsQuery columns = ColumnsQuery()) = 0;
+    virtual SelectQuery selectQuery(ColumnsQuery columns = ColumnsQuery()) = 0;
 
     template <typename... Args>
-    SelectQuery selectColumns(Args&& ... args)
+    SelectQuery select(Args&& ... args)
     {
-        return select(ColumnsQuery(conv(args...)));
+        return selectQuery(ColumnsQuery(conv(args...)));
     }
 };
 
@@ -66,7 +66,7 @@ class SqlQueryBuilder : public AbstractSqlBuilder
 {
 public:
     SqlQueryBuilder();
-    virtual SelectQuery select(ColumnsQuery columns = ColumnsQuery()) override;
+    virtual SelectQuery selectQuery(ColumnsQuery columns = ColumnsQuery()) override;
 };
 
 using SqlBuilder = QSharedPointer<SqlQueryBuilder>;

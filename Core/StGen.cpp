@@ -80,7 +80,7 @@ SqlQueryBuilder::SqlQueryBuilder()
 
 }
 
-SelectQuery SqlQueryBuilder::select(ColumnsQuery columns)
+SelectQuery SqlQueryBuilder::selectQuery(ColumnsQuery columns)
 {
     return SelectQuery(columns);
 }
