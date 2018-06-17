@@ -11,9 +11,11 @@ INCLUDEPATH += ../Core
 
 SOURCES += \
         main.cpp \
-    TSelect.cpp
+    TSelect.cpp \
+    TCommon.cpp
 
 HEADERS += \
-    TSelect.h
+    TSelect.h \
+    TCommon.h
 
 include(../Core/Core.pri)

@@ -2,6 +2,7 @@
 #include <QtTest/QTest>
 #include <QtTest/qtestcase.h>
 #include "TSelect.h"
+#include "TCommon.h"
 
 template <class TestClass>
 int runTest(const QStringList &args = QStringList())
@@ -18,6 +19,7 @@ int main(int argc, char *argv[])
     int tests = 0;
 
     tests += runTest<TSelect>();
+    tests += runTest<TCommon>();
 
     return tests;
 }

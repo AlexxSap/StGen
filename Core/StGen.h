@@ -3,6 +3,8 @@
 
 #include <QSharedPointer>
 
+#include "Common.h"
+
 class AbstractQuery
 {
 public:
@@ -46,13 +48,18 @@ public:
 private:
     ColumnsQuery columns_;
     FromQuery from_;
-
 };
 
 class AbstractSqlBuilder
 {
 public:
     virtual SelectQuery select(ColumnsQuery columns = ColumnsQuery()) = 0;
+
+    template <typename... Args>
+    SelectQuery selectColumns(Args&& ... args)
+    {
+        return select(ColumnsQuery(conv(args...)));
+    }
 };
 
 class SqlQueryBuilder : public AbstractSqlBuilder

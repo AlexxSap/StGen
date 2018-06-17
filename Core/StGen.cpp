@@ -1,5 +1,8 @@
 #include "StGen.h"
 
+#include <QDebug>
+
+
 
 SqlBuilder StGen::createSqlBuilder()
 {
@@ -41,8 +44,8 @@ ColumnsQuery::ColumnsQuery(const QStringList &columns)
     : AbstractQuery(),
       columns_(columns)
 {
-
 }
+
 
 QString ColumnsQuery::toQueryString() const
 {
@@ -70,8 +73,6 @@ QString SelectQuery::toQueryString() const
             + from_.toQueryString()
             + ";";
 }
-
-
 
 SqlQueryBuilder::SqlQueryBuilder()
     : AbstractSqlBuilder()

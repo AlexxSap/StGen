@@ -7,5 +7,5 @@ DEFINES += QT_DEPRECATED_WARNINGS
 include(Core.pri)
 
 SOURCES += \
-    main.cpp \
+    main.cpp
 
