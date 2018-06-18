@@ -4,6 +4,7 @@
 
 #include "../Core/StGen.h"
 
+
 TSelect::TSelect(QObject *parent)
     : QObject(parent)
 {
@@ -35,3 +36,5 @@ void TSelect::TestSimpleSelectColumns()
         QCOMPARE(query, expected);
     }
 }
+
+

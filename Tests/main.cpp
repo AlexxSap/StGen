@@ -3,6 +3,7 @@
 
 #include "TSelect.h"
 #include "TCommon.h"
+#include "TBase.h"
 
 #include <QDebug>
 
@@ -22,6 +23,7 @@ int main(int argc, char *argv[])
 
     tests += runTest<TCommon>();
     tests += runTest<TSelect>();
+    tests += runTest<TBase>();
 
 
     return tests;

@@ -32,8 +32,17 @@ void DataBaseInterface::close()
     db_.close();
 }
 
-SqliteInterface::SqliteInterface(const DataBaseSettings &settings)
-    : DataBaseInterface(settings)
+QSqlQuery DataBaseInterface::query() const
+{
+    QSqlQuery query(db_);
+    query.setForwardOnly(true);
+
+    return query;
+}
+
+SqliteInterface::SqliteInterface(const DataBaseSettings &settings,
+                                 const bool autoClose)
+    : DataBaseInterface(settings, autoClose)
 {
 
 }
@@ -61,5 +70,4 @@ QString SqliteInterface::driverID() const
 {
     return "QSQLITE";
 }
-
 

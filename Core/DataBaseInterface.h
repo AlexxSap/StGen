@@ -3,12 +3,13 @@
 
 #include <QString>
 #include <QSqlDatabase>
+#include <QSqlQuery>
 
 struct DataBaseSettings
 {
     QString user;
     QString password;
-    QString host;
+    QString host = "localhost";
     QString port;
 };
 
@@ -27,6 +28,8 @@ public:
     virtual bool create(const DataBaseName &name) = 0;
     virtual bool remove(const DataBaseName &name) = 0;
 
+    QSqlQuery query() const;
+
 private:
     virtual QString driverID() const = 0;
 
@@ -39,7 +42,8 @@ private:
 class SqliteInterface : public DataBaseInterface
 {
 public:
-    SqliteInterface(const DataBaseSettings& settings);
+    SqliteInterface(const DataBaseSettings& settings,
+                    const bool autoClose = false);
 
     virtual bool create(const DataBaseName &name) override;
     virtual bool remove(const DataBaseName &name) override;
@@ -47,5 +51,6 @@ public:
 private:
     virtual QString driverID() const override;
 };
+
 
 #endif // DATABASEINTERFACE_H
