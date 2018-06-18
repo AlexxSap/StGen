@@ -39,3 +39,7 @@ CMakeLists.txt.user*
 
 
 TestDB
+
+Core/Core
+
+Tests/Tests

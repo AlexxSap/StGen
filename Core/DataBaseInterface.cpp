@@ -40,12 +40,21 @@ SqliteInterface::SqliteInterface(const DataBaseSettings &settings)
 
 bool SqliteInterface::create(const DataBaseName &name)
 {
+    QFile file(name);
+    if(!file.open(QIODevice::WriteOnly))
+    {
+        return false;
+    }
 
+    file.close();
+
+    return true;
 }
 
 bool SqliteInterface::remove(const DataBaseName &name)
 {
-
+    close();
+    return QFile::remove(name);
 }
 
 QString SqliteInterface::driverID() const

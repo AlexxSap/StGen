@@ -1,4 +1,4 @@
-QT -= gui console
+QT -= gui
 
 QT += sql
 
@@ -10,4 +10,6 @@ include(Core.pri)
 
 SOURCES += \
     main.cpp
+
+
 
