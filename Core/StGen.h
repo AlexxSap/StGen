@@ -6,67 +6,7 @@
 #include "Common.h"
 #include "DataBaseInterface.h"
 #include "QueryResult.h"
-
-class AbstractQuery
-{
-public:
-    virtual ~AbstractQuery();
-    virtual QString toQueryString() const = 0;
-};
-
-class ColumnsQuery : public AbstractQuery
-{
-public:
-    ColumnsQuery();
-    ColumnsQuery(const QStringList &columns);
-
-    virtual QString toQueryString() const override;
-
-private:
-    QStringList columns_;
-};
-
-class FromQuery : public AbstractQuery
-{
-public:
-    FromQuery();
-    FromQuery(const QString &tableName);
-    FromQuery(const char* tableName);
-
-    virtual QString toQueryString() const override;
-
-private:
-    QString table_;
-};
-
-class PreparedQuery : public AbstractQuery
-{
-public:
-    PreparedQuery(QSqlQuery query);
-
-     virtual QString toQueryString() const override;
-
-    QueryResult exec();
-
-private:
-    QSqlQuery query_;
-};
-
-class SelectQuery : public AbstractQuery
-{
-public:
-    SelectQuery(ColumnsQuery columns);
-    SelectQuery& from(FromQuery table);
-
-    PreparedQuery prepare();
-    QueryResult exec();
-
-    virtual QString toQueryString() const override;
-
-private:
-    ColumnsQuery columns_;
-    FromQuery from_;
-};
+#include "Query.h"
 
 class AbstractSqlBuilder
 {
