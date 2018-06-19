@@ -7,6 +7,8 @@
 
 struct DataBaseSettings
 {
+    DataBaseSettings(const QString &name) : base(name) {}
+    QString base;
     QString user;
     QString password;
     QString host = "localhost";
@@ -15,6 +17,11 @@ struct DataBaseSettings
 
 using DataBaseName = QString;
 
+enum class Bases
+{
+    SQLITE
+};
+
 class DataBaseInterface
 {
 public:
@@ -22,21 +29,28 @@ public:
                       const bool autoClose = false);
     ~DataBaseInterface();
 
-    bool open(const DataBaseName &dataBaseName);
+    bool open();
     void close();
 
-    virtual bool create(const DataBaseName &name) = 0;
-    virtual bool remove(const DataBaseName &name) = 0;
+    virtual bool create() = 0;
+    virtual bool remove() = 0;
+    virtual bool exists() = 0;
 
     QSqlQuery query() const;
+    QString dataBaseName() const;
+
+    Bases type() const;
 
 private:
     virtual QString driverID() const = 0;
 
-private:
+protected:
     DataBaseSettings settings_;
-    bool autoClose_ = false;
     QSqlDatabase db_;
+    Bases type_;
+
+private:
+    bool autoClose_ = false;
 };
 
 class SqliteInterface : public DataBaseInterface
@@ -45,8 +59,9 @@ public:
     SqliteInterface(const DataBaseSettings& settings,
                     const bool autoClose = false);
 
-    virtual bool create(const DataBaseName &name) override;
-    virtual bool remove(const DataBaseName &name) override;
+    virtual bool create() override;
+    virtual bool remove() override;
+    virtual bool exists() override;
 
 private:
     virtual QString driverID() const override;

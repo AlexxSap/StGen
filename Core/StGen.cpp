@@ -1,12 +1,13 @@
 #include "StGen.h"
 
 #include <QDebug>
+#include <QSqlError>
 
 
 
-SqlBuilder StGen::createSqlBuilder()
+SqliteBuilder StGen::createSqlBuilder(SqliteInterface *interface)
 {
-    return SqlBuilder::create();
+    return SqliteBuilder::create(interface);
 }
 
 FromQuery::FromQuery()
@@ -65,6 +66,20 @@ SelectQuery &SelectQuery::from(FromQuery table)
     return *this;
 }
 
+PreparedQuery SelectQuery::prepare()
+{
+    QSqlQuery query;
+    query.prepare(toQueryString());
+    return PreparedQuery(query);
+}
+
+QueryResult SelectQuery::exec()
+{
+    QSqlQuery query;
+    query.exec(toQueryString());
+    return QueryResult(query);
+}
+
 QString SelectQuery::toQueryString() const
 {
     return QString("select ")
@@ -74,13 +89,13 @@ QString SelectQuery::toQueryString() const
             + ";";
 }
 
-SqlQueryBuilder::SqlQueryBuilder()
-    : AbstractSqlBuilder()
+SqliteQueryBuilder::SqliteQueryBuilder(SqliteInterface *interface)
+    : base_(interface)
 {
-
+    qInfo() << "create SqliteQueryBuilder";
 }
 
-SelectQuery SqlQueryBuilder::selectQuery(ColumnsQuery columns)
+SelectQuery SqliteQueryBuilder::selectQuery(ColumnsQuery columns)
 {
     return SelectQuery(columns);
 }
@@ -89,3 +104,22 @@ AbstractQuery::~AbstractQuery()
 {
 
 }
+
+
+PreparedQuery::PreparedQuery(QSqlQuery query)
+    : query_(std::move(query))
+{
+
+}
+
+QString PreparedQuery::toQueryString() const
+{
+    return query_.lastQuery();
+}
+
+QueryResult PreparedQuery::exec()
+{
+    query_.exec();
+    return QueryResult(query_);
+}
+

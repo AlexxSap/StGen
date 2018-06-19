@@ -12,6 +12,7 @@ public:
 private slots:
     void TestSimpleSelect();
     void TestSimpleSelectColumns();
+    void TestSimpleSelectFromBase();
 };
 
 #endif // TSELECT_H

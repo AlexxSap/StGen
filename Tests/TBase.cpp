@@ -1,7 +1,6 @@
 #include "TBase.h"
 
 #include <QDebug>
-
 #include "Utils.h"
 
 TBase::TBase(QObject *parent)
@@ -10,11 +9,11 @@ TBase::TBase(QObject *parent)
 
 }
 
-void TBase::TestSImpleSelect()
+void TBase::TestSimpleSelect()
 {
-    const QString dataBaseName("TestSimpleSelectFromBase.db");
-    SqliteInterface b(DataBaseSettings(), false);
-    TestBase base(&b, dataBaseName);
+    const QString dataBaseName("TestSimpleSelect.db");
+    SqliteInterface b(DataBaseSettings(dataBaseName), false);
+    TestBase base(&b);
 
     QSqlQuery query = base->query();
     query.exec("create table table1(id integer, value varchar(50));");
@@ -26,5 +25,4 @@ void TBase::TestSImpleSelect()
     {
         qInfo() << query.value(0).toInt() << query.value(1).toString();
     }
-
 }

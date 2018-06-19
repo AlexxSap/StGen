@@ -1,18 +1,19 @@
 #include "Utils.h"
 
 
-TestBase::TestBase(DataBaseInterface *base, const QString &name)
-    : base_(base),
-      name_(name)
+TestBase::TestBase(DataBaseInterface *base)
+    : base_(base)
 {
-    base_->remove(name_);
-    base_->create(name_);
-    base_->open(name_);
+    base_->close();
+    base_->remove();
+    base_->create();
+    base_->open();
 }
 
 TestBase::~TestBase()
 {
-    base_->remove(name_);
+    base_->close();
+    base_->remove();
 }
 
 DataBaseInterface *TestBase::operator ->()

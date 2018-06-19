@@ -7,11 +7,9 @@ class TestBase
 {
 private:
     DataBaseInterface *base_ = nullptr;
-    QString name_;
 
 public:
-    TestBase(DataBaseInterface* base,
-             const QString &name);
+    TestBase(DataBaseInterface* base);
     ~TestBase();
     DataBaseInterface* operator ->();
 };

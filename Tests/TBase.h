@@ -10,7 +10,7 @@ public:
     explicit TBase(QObject *parent = nullptr);
 
 private slots:
-    void TestSImpleSelect();
+    void TestSimpleSelect();
 };
 
 #endif // TBASE_H

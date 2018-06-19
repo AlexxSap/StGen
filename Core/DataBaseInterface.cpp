@@ -18,11 +18,11 @@ DataBaseInterface::~DataBaseInterface()
     }
 }
 
-bool DataBaseInterface::open(const DataBaseName &dataBaseName)
+bool DataBaseInterface::open()
 {
     db_ = QSqlDatabase::addDatabase(driverID());
     db_.setHostName(settings_.host);
-    db_.setDatabaseName(dataBaseName);
+    db_.setDatabaseName(dataBaseName());
 
     return db_.open();
 }
@@ -40,16 +40,26 @@ QSqlQuery DataBaseInterface::query() const
     return query;
 }
 
+QString DataBaseInterface::dataBaseName() const
+{
+    return settings_.base;
+}
+
+Bases DataBaseInterface::type() const
+{
+    return type_;
+}
+
 SqliteInterface::SqliteInterface(const DataBaseSettings &settings,
                                  const bool autoClose)
     : DataBaseInterface(settings, autoClose)
 {
-
+    type_ = Bases::SQLITE;
 }
 
-bool SqliteInterface::create(const DataBaseName &name)
+bool SqliteInterface::create()
 {
-    QFile file(name);
+    QFile file(dataBaseName());
     if(!file.open(QIODevice::WriteOnly))
     {
         return false;
@@ -60,10 +70,15 @@ bool SqliteInterface::create(const DataBaseName &name)
     return true;
 }
 
-bool SqliteInterface::remove(const DataBaseName &name)
+bool SqliteInterface::remove()
 {
     close();
-    return QFile::remove(name);
+    return QFile::remove(dataBaseName());
+}
+
+bool SqliteInterface::exists()
+{
+    return QFile::exists(dataBaseName());
 }
 
 QString SqliteInterface::driverID() const

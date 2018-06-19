@@ -4,6 +4,8 @@
 #include <QSharedPointer>
 
 #include "Common.h"
+#include "DataBaseInterface.h"
+#include "QueryResult.h"
 
 class AbstractQuery
 {
@@ -37,11 +39,27 @@ private:
     QString table_;
 };
 
+class PreparedQuery : public AbstractQuery
+{
+public:
+    PreparedQuery(QSqlQuery query);
+
+     virtual QString toQueryString() const override;
+
+    QueryResult exec();
+
+private:
+    QSqlQuery query_;
+};
+
 class SelectQuery : public AbstractQuery
 {
 public:
     SelectQuery(ColumnsQuery columns);
     SelectQuery& from(FromQuery table);
+
+    PreparedQuery prepare();
+    QueryResult exec();
 
     virtual QString toQueryString() const override;
 
@@ -62,19 +80,22 @@ public:
     }
 };
 
-class SqlQueryBuilder : public AbstractSqlBuilder
+class SqliteQueryBuilder : public AbstractSqlBuilder
 {
 public:
-    SqlQueryBuilder();
+    SqliteQueryBuilder(SqliteInterface *interface);
     virtual SelectQuery selectQuery(ColumnsQuery columns = ColumnsQuery()) override;
+
+private:
+    SqliteInterface *base_;
 };
 
-using SqlBuilder = QSharedPointer<SqlQueryBuilder>;
+using SqliteBuilder = QSharedPointer<SqliteQueryBuilder>;
 
 class StGen
 {
 public:
-    static SqlBuilder createSqlBuilder();
+    static SqliteBuilder createSqlBuilder(SqliteInterface *interface);
 };
 
 #endif // STGEN_H
