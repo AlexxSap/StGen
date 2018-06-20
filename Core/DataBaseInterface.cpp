@@ -20,7 +20,15 @@ DataBaseInterface::~DataBaseInterface()
 
 bool DataBaseInterface::open()
 {
-    db_ = QSqlDatabase::addDatabase(driverID());
+    if(QSqlDatabase::contains(QSqlDatabase::defaultConnection))
+    {
+        db_ = QSqlDatabase::database();
+    }
+    else
+    {
+        db_ = QSqlDatabase::addDatabase(driverID());
+    }
+
     db_.setHostName(settings_.host);
     db_.setDatabaseName(dataBaseName());
 
