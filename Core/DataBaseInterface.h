@@ -22,7 +22,13 @@ enum class Bases
     SQLITE
 };
 
-class DataBaseInterface
+class AbstractDataBaseInterface
+{
+public:
+    virtual QSqlQuery query() const = 0;
+};
+
+class DataBaseInterface : public AbstractDataBaseInterface
 {
 public:
     DataBaseInterface(const DataBaseSettings& settings,
@@ -36,7 +42,7 @@ public:
     virtual bool remove() = 0;
     virtual bool exists() = 0;
 
-    QSqlQuery query() const;
+    virtual QSqlQuery query() const override;
     QString dataBaseName() const;
 
     Bases type() const;

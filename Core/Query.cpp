@@ -48,25 +48,9 @@ QString FromQuery::toQueryString() const
     return QString("from %1").arg(table_);
 }
 
-PreparedQuery::PreparedQuery(QSqlQuery query)
-    : query_(std::move(query))
-{
-
-}
-
-QString PreparedQuery::toQueryString() const
-{
-    return query_.lastQuery();
-}
-
-QueryResult PreparedQuery::exec() const
-{
-    query_.exec();
-    return QueryResult(query_);
-}
-
-SelectQuery::SelectQuery(ColumnsQuery columns)
-    : AbstractQuery(),
+SelectQuery::SelectQuery(AbstractDataBaseInterface *base,
+                         ColumnsQuery columns)
+    : AbstractExecuteQuery(base),
       columns_(std::move(columns))
 {
 
@@ -78,17 +62,11 @@ SelectQuery &SelectQuery::from(FromQuery table)
     return *this;
 }
 
-PreparedQuery SelectQuery::prepare() const
+QueryResult SelectQuery::exec()
 {
-    QSqlQuery query;
+    QSqlQuery query = this->query();
     query.prepare(toQueryString());
-    return PreparedQuery(query);
-}
-
-QueryResult SelectQuery::exec() const
-{
-    QSqlQuery query;
-    query.exec(toQueryString());
+    query.exec();
     return QueryResult(query);
 }
 
@@ -99,4 +77,15 @@ QString SelectQuery::toQueryString() const
             + " "
             + from_.toQueryString()
             + ";";
+}
+
+AbstractExecuteQuery::AbstractExecuteQuery(AbstractDataBaseInterface *base)
+    : base_(base)
+{
+
+}
+
+QSqlQuery AbstractExecuteQuery::query() const
+{
+    return base_->query();
 }

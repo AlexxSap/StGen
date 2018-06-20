@@ -3,6 +3,7 @@
 
 #include <QString>
 #include "QueryResult.h"
+#include "DataBaseInterface.h"
 
 class AbstractQuery
 {
@@ -36,26 +37,26 @@ private:
     QString table_;
 };
 
-class PreparedQuery : public AbstractQuery
+class AbstractExecuteQuery : public AbstractQuery
 {
 public:
-    PreparedQuery(QSqlQuery query);
-    QueryResult exec() const;
+    AbstractExecuteQuery(AbstractDataBaseInterface* base);
+    virtual QueryResult exec() = 0;
 
-    virtual QString toQueryString() const override;
+    QSqlQuery query() const;
 
 private:
-    QSqlQuery query_;
+    AbstractDataBaseInterface* base_;
 };
 
-class SelectQuery : public AbstractQuery
+class SelectQuery : public AbstractExecuteQuery
 {
 public:
-    SelectQuery(ColumnsQuery columns);
+    SelectQuery(AbstractDataBaseInterface* base,
+                ColumnsQuery columns);
     SelectQuery& from(FromQuery table);
-    PreparedQuery prepare() const;
-    QueryResult exec() const;
 
+    virtual QueryResult exec() override;
     virtual QString toQueryString() const override;
 
 private:

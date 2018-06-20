@@ -11,6 +11,8 @@
 class AbstractSqlBuilder
 {
 public:
+    AbstractSqlBuilder(AbstractDataBaseInterface* base);
+
     virtual SelectQuery selectQuery(ColumnsQuery columns = ColumnsQuery()) = 0;
 
     template <typename... Args>
@@ -18,16 +20,17 @@ public:
     {
         return selectQuery(ColumnsQuery(conv(args...)));
     }
+
+protected:
+    AbstractDataBaseInterface* base_;
 };
 
 class SqliteQueryBuilder : public AbstractSqlBuilder
 {
 public:
-    SqliteQueryBuilder(SqliteInterface *interface);
+    SqliteQueryBuilder(SqliteInterface *base);
     virtual SelectQuery selectQuery(ColumnsQuery columns = ColumnsQuery()) override;
 
-private:
-    SqliteInterface *base_;
 };
 
 using SqliteBuilder = QSharedPointer<SqliteQueryBuilder>;

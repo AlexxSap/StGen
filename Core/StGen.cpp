@@ -8,13 +8,18 @@ SqliteBuilder StGen::createSqlBuilder(SqliteInterface *interface)
     return SqliteBuilder::create(interface);
 }
 
-SqliteQueryBuilder::SqliteQueryBuilder(SqliteInterface *interface)
-    : base_(interface)
+SqliteQueryBuilder::SqliteQueryBuilder(SqliteInterface *base)
+    : AbstractSqlBuilder(base)
 {
-    qInfo() << "create SqliteQueryBuilder";
 }
 
 SelectQuery SqliteQueryBuilder::selectQuery(ColumnsQuery columns)
 {
-    return SelectQuery(columns);
+    return SelectQuery(base_, columns);
+}
+
+AbstractSqlBuilder::AbstractSqlBuilder(AbstractDataBaseInterface *base)
+    : base_(base)
+{
+
 }

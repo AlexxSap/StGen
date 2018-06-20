@@ -56,16 +56,6 @@ void TSelect::TestSimpleSelectFromBase()
     SqliteBuilder builder = StGen::createSqlBuilder(&b);
 
     {
-        const QueryResult result = builder->select("id", "value").from("table1").prepare().exec();
-        QHash<int, QString> actual;
-        while(result.next())
-        {
-            actual.insert(result.value("id").toInt(), result.value(1).toString());
-        }
-        QCOMPARE(actual, expected);
-    }
-
-    {
         const QueryResult result = builder->select("id", "value").from("table1").exec();
         QHash<int, QString> actual;
         while(result.next())
