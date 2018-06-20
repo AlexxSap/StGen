@@ -4,6 +4,7 @@
 #include <QString>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QSharedPointer>
 
 struct DataBaseSettings
 {
@@ -22,10 +23,12 @@ enum class Bases
     SQLITE
 };
 
+using SqlQuery = QSharedPointer<QSqlQuery>;
+
 class AbstractDataBaseInterface
 {
 public:
-    virtual QSqlQuery query() const = 0;
+    virtual SqlQuery query() const = 0;
 };
 
 class DataBaseInterface : public AbstractDataBaseInterface
@@ -42,7 +45,7 @@ public:
     virtual bool remove() = 0;
     virtual bool exists() = 0;
 
-    virtual QSqlQuery query() const override;
+    virtual SqlQuery query() const override;
     QString dataBaseName() const;
 
     Bases type() const;

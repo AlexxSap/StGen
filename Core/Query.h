@@ -43,7 +43,7 @@ public:
     AbstractExecuteQuery(AbstractDataBaseInterface* base);
     virtual QueryResult exec() = 0;
 
-    QSqlQuery query() const;
+    SqlQuery query() const;
 
 private:
     AbstractDataBaseInterface* base_;

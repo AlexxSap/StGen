@@ -64,9 +64,9 @@ SelectQuery &SelectQuery::from(FromQuery table)
 
 QueryResult SelectQuery::exec()
 {
-    QSqlQuery query = this->query();
-    query.prepare(toQueryString());
-    query.exec();
+    SqlQuery query = this->query();
+    query->prepare(toQueryString());
+    query->exec();
     return QueryResult(query);
 }
 
@@ -85,7 +85,7 @@ AbstractExecuteQuery::AbstractExecuteQuery(AbstractDataBaseInterface *base)
 
 }
 
-QSqlQuery AbstractExecuteQuery::query() const
+SqlQuery AbstractExecuteQuery::query() const
 {
     return base_->query();
 }

@@ -47,10 +47,10 @@ void TSelect::TestSimpleSelectFromBase()
     {
         expected.insert(1, "value1");
         expected.insert(2, "value2");
-        QSqlQuery query = base->query();
-        query.exec("create table table1(id integer, value varchar(50));");
-        query.exec("insert into table1 values(1, 'value1');");
-        query.exec("insert into table1 values(2, 'value2');");
+        SqlQuery query = base->query();
+        query->exec("create table table1(id integer, value varchar(50));");
+        query->exec("insert into table1 values(1, 'value1');");
+        query->exec("insert into table1 values(2, 'value2');");
     }
 
     SqliteBuilder builder = StGen::createSqlBuilder(&b);

@@ -32,10 +32,10 @@ void DataBaseInterface::close()
     db_.close();
 }
 
-QSqlQuery DataBaseInterface::query() const
+SqlQuery DataBaseInterface::query() const
 {
-    QSqlQuery query(db_);
-    query.setForwardOnly(true);
+    SqlQuery query = SqlQuery::create(db_);
+    query->setForwardOnly(true);
 
     return query;
 }

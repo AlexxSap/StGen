@@ -1,13 +1,13 @@
 #ifndef QUERYRESULT_H
 #define QUERYRESULT_H
 
-#include <QSqlQuery>
 #include <QVariant>
+#include "DataBaseInterface.h"
 
 class QueryResult
 {
 public:
-    QueryResult(QSqlQuery query);
+    QueryResult(SqlQuery query);
 
     bool next() const;
 
@@ -18,7 +18,7 @@ public:
     QString error() const;
 
 private:
-    mutable QSqlQuery query_;
+    SqlQuery query_;
 
 };
 
