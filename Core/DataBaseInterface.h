@@ -1,10 +1,9 @@
 #ifndef DATABASEINTERFACE_H
 #define DATABASEINTERFACE_H
 
-#include <QString>
+#include <stable.h>
 #include <QSqlDatabase>
 #include <QSqlQuery>
-#include <QSharedPointer>
 
 struct DataBaseSettings
 {

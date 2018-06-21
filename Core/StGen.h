@@ -1,11 +1,8 @@
 #ifndef STGEN_H
 #define STGEN_H
 
-#include <QSharedPointer>
-
-#include "Common.h"
+#include "stable.h"
 #include "DataBaseInterface.h"
-#include "QueryResult.h"
 #include "Query.h"
 
 class AbstractSqlBuilder
@@ -13,7 +10,7 @@ class AbstractSqlBuilder
 public:
     AbstractSqlBuilder(AbstractDataBaseInterface* base);
 
-    virtual SelectQuery selectQuery(ColumnsQuery columns = ColumnsQuery()) = 0;
+    virtual SelectQuery selectQuery(ColumnsQuery columns) = 0;
 
     template <typename... Args>
     SelectQuery select(Args&& ... args)

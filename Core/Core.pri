@@ -1,5 +1,7 @@
 INCLUDEPATH += $$PWD
 
+PRECOMPILED_HEADER = $$PWD/stable.h
+
 SOURCES += \
     $$PWD/StGen.cpp \
     $$PWD/Common.cpp \

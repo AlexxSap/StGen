@@ -1,6 +1,5 @@
 #include "StGen.h"
 
-#include <QDebug>
 #include <QSqlError>
 
 SqliteBuilder StGen::createSqlBuilder(SqliteInterface *interface)

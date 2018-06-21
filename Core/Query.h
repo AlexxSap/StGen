@@ -1,9 +1,9 @@
 #ifndef QUERY_H
 #define QUERY_H
 
-#include <QString>
-#include "QueryResult.h"
+#include "stable.h"
 #include "DataBaseInterface.h"
+#include "QueryResult.h"
 
 class AbstractQuery
 {
