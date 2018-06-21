@@ -12,7 +12,7 @@ SqliteQueryBuilder::SqliteQueryBuilder(SqliteInterface *base)
 {
 }
 
-SelectQuery SqliteQueryBuilder::selectQuery(ColumnsQuery columns)
+SelectQuery SqliteQueryBuilder::select(const ColumnsQuery &columns)
 {
     return SelectQuery(base_, columns);
 }

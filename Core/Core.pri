@@ -14,4 +14,5 @@ HEADERS += \
     $$PWD/Common.h \
     $$PWD/DataBaseInterface.h \
     $$PWD/QueryResult.h \
-    $$PWD/Query.h
+    $$PWD/Query.h \
+    $$PWD/StGenGlobal.h

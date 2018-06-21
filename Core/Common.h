@@ -10,7 +10,7 @@ QStringList conv(Args&& ... args)
     QStringList lst_;
     for (auto&& arg : std::initializer_list<QString>{std::forward<Args>(args)...})
     {
-        lst_.append(arg);
+        lst_.append(QString(arg));
     }
     return lst_;
 }

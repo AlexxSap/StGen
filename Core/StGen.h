@@ -2,21 +2,13 @@
 #define STGEN_H
 
 #include "stable.h"
-#include "DataBaseInterface.h"
 #include "Query.h"
 
 class AbstractSqlBuilder
 {
 public:
     AbstractSqlBuilder(AbstractDataBaseInterface* base);
-
-    virtual SelectQuery selectQuery(ColumnsQuery columns) = 0;
-
-    template <typename... Args>
-    SelectQuery select(Args&& ... args)
-    {
-        return selectQuery(ColumnsQuery(conv(args...)));
-    }
+    virtual SelectQuery select(const ColumnsQuery &columns = ColumnsQuery()) = 0;
 
 protected:
     AbstractDataBaseInterface* base_;
@@ -26,10 +18,16 @@ class SqliteQueryBuilder : public AbstractSqlBuilder
 {
 public:
     SqliteQueryBuilder(SqliteInterface *base);
-    virtual SelectQuery selectQuery(ColumnsQuery columns = ColumnsQuery()) override;
+    virtual SelectQuery select(const ColumnsQuery &columns = ColumnsQuery()) override;
 
+    template <typename... Args>
+    SelectQuery select(Args ... args)
+    {
+        return select(ColumnsQuery(conv(args...)));
+    }
 };
 
+using AbstractBuilder = QSharedPointer<AbstractSqlBuilder>;
 using SqliteBuilder = QSharedPointer<SqliteQueryBuilder>;
 
 class StGen

@@ -1,37 +1,39 @@
 #include "TSelect.h"
 
 #include <QtTest>
-#include "../Core/StGen.h"
+#include "StGen.h"
 #include "Utils.h"
 #include "QueryResult.h"
+#include <StGenGlobal.h>
 
 TSelect::TSelect(QObject *parent)
     : QObject(parent)
 {
-
+    SqliteBuilder builder = StGen::createSqlBuilder(nullptr);
+    StGenGlobal::sqlBuilder = builder;
 }
 
 void TSelect::TestSimpleSelect()
 {
     SqliteBuilder builder = StGen::createSqlBuilder(nullptr);
 
-    const QString query = builder->selectQuery().from("tableName").toQueryString();
+    const QString query = builder->select().from("tableName").toQueryString();
     const QString expected("select * from tableName;");
     QCOMPARE(query, expected);
 }
 
 void TSelect::TestSimpleSelectColumns()
 {
-    SqliteBuilder builder = StGen::createSqlBuilder(nullptr);
+    using namespace StGenGlobal;
 
     {
-        const QString query = builder->select("col1", "col2").from("tableName").toQueryString();
+        const QString query = select("col1", "col2").from("tableName").toQueryString();
         const QString expected("select col1, col2 from tableName;");
         QCOMPARE(query, expected);
     }
 
     {
-        const QString query = builder->select("col1", "col2", "col3", "col4").from("tableName").toQueryString();
+        const QString query = select("col1", "col2", "col3", "col4").from("tableName").toQueryString();
         const QString expected("select col1, col2, col3, col4 from tableName;");
         QCOMPARE(query, expected);
     }

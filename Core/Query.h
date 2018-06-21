@@ -2,7 +2,6 @@
 #define QUERY_H
 
 #include "stable.h"
-#include "DataBaseInterface.h"
 #include "QueryResult.h"
 
 class AbstractQuery
