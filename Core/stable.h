@@ -6,6 +6,7 @@
 #include <QString>
 #include <QStringList>
 #include <QSharedPointer>
+#include <QDate>
 
 #include "Common.h"
 

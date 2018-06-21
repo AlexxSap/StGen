@@ -62,6 +62,12 @@ SelectQuery &SelectQuery::from(FromQuery table)
     return *this;
 }
 
+SelectQuery &SelectQuery::where(WhereCase whereCond)
+{
+    whereExpr_ = std::move(whereCond);
+    return *this;
+}
+
 QueryResult SelectQuery::exec()
 {
     SqlQuery query = this->query();
@@ -72,11 +78,18 @@ QueryResult SelectQuery::exec()
 
 QString SelectQuery::toQueryString() const
 {
-    return QString("select ")
+    QString result = "select "
             + columns_.toQueryString()
             + " "
-            + from_.toQueryString()
-            + ";";
+            + from_.toQueryString();
+
+    if(!whereExpr_.isEmpty())
+    {
+        result += " where "
+                + whereExpr_.toQueryString();
+    }
+
+    return result+ ";";
 }
 
 AbstractExecuteQuery::AbstractExecuteQuery(AbstractDataBaseInterface *base)
@@ -88,4 +101,66 @@ AbstractExecuteQuery::AbstractExecuteQuery(AbstractDataBaseInterface *base)
 SqlQuery AbstractExecuteQuery::query() const
 {
     return base_->query();
+}
+
+WhereCase::WhereCase()
+{
+
+}
+
+WhereCase::WhereCase(Expr expr)
+    : expr_(expr)
+{
+
+}
+
+QString WhereCase::toQueryString() const
+{
+    if(expr_.isNull())
+    {
+        return QString();
+    }
+    return expr_->toQueryString();
+}
+
+bool WhereCase::isEmpty() const
+{
+    return expr_.isNull() || expr_->isEmpty();
+}
+
+ValueExpression::ValueExpression(QVariant value)
+    : value_(std::move(value))
+{
+
+}
+
+QString ValueExpression::toQueryString() const
+{
+    if(value_.type() == QVariant::Date)
+    {
+        return "'" + value_.toDate().toString("yyyy-MM-dd") + "'";
+    }
+    return value_.toString();
+}
+
+bool ValueExpression::isEmpty() const
+{
+    return value_.isNull();
+}
+
+EqualExpression::EqualExpression(QVariant a, QVariant b)
+    : a_(ValueExpr::create(a)),
+      b_(ValueExpr::create(b))
+{
+
+}
+
+QString EqualExpression::toQueryString() const
+{
+    return a_->toQueryString() + " = " + b_->toQueryString();
+}
+
+bool EqualExpression::isEmpty() const
+{
+    return a_.isNull() || b_.isNull();
 }

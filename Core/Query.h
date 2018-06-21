@@ -36,6 +36,55 @@ private:
     QString table_;
 };
 
+class Expression : public AbstractQuery
+{
+public:
+    virtual bool isEmpty() const = 0;
+};
+
+using Expr = QSharedPointer<Expression>;
+
+class ValueExpression : public Expression
+{
+public:
+    ValueExpression(QVariant value);
+
+    virtual QString toQueryString() const override;
+    virtual bool isEmpty() const override;
+
+private:
+    QVariant value_;
+};
+
+using ValueExpr = QSharedPointer<ValueExpression>;
+
+class EqualExpression : public Expression
+{
+public:
+    EqualExpression(QVariant a, QVariant b);
+
+    virtual QString toQueryString() const override;
+    virtual bool isEmpty() const override;
+private:
+    Expr a_;
+    Expr b_;
+};
+
+using EqualExpr = QSharedPointer<EqualExpression>;
+
+class WhereCase : public AbstractQuery
+{
+public:
+    WhereCase();
+    WhereCase(Expr expr);
+    virtual QString toQueryString() const override;
+    bool isEmpty() const;
+
+private:
+    Expr expr_;
+
+};
+
 class AbstractExecuteQuery : public AbstractQuery
 {
 public:
@@ -54,6 +103,7 @@ public:
     SelectQuery(AbstractDataBaseInterface* base,
                 ColumnsQuery columns);
     SelectQuery& from(FromQuery table);
+    SelectQuery& where(WhereCase whereCond);
 
     virtual QueryResult exec() override;
     virtual QString toQueryString() const override;
@@ -61,6 +111,7 @@ public:
 private:
     ColumnsQuery columns_;
     FromQuery from_;
+    WhereCase whereExpr_;
 };
 
 

@@ -12,6 +12,12 @@ namespace StGenGlobal
     {
         return sqlBuilder->select(ColumnsQuery(conv(args...)));
     }
+
+    template <typename A, typename B>
+    Expr equal(A a, B b)
+    {
+        return EqualExpr::create(std::move(a), std::move(b));
+    }
 }
 
 #endif // STGENGLOBAL_H

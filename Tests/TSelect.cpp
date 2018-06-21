@@ -69,4 +69,22 @@ void TSelect::TestSimpleSelectFromBase()
 
 }
 
+void TSelect::TestSimpleWhere()
+{
+    using namespace StGenGlobal;
+
+    {
+        const QString query = select().from("tableName").where(equal("id", 35)).toQueryString();
+        const QString expected("select * from tableName where id = 35;");
+        QCOMPARE(query, expected);
+    }
+
+    {
+        const QString query = select().from("tableName").where(equal("date", QDate(2018, 6, 21))).toQueryString();
+        const QString expected("select * from tableName where date = '2018-06-21';");
+        QCOMPARE(query, expected);
+    }
+
+}
+
 
