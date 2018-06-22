@@ -43,12 +43,12 @@ public:
 
     enum class Operation
     {
-        Equal,
-        Not_Equal,
-        Less,
-        Less_Equal,
-        More,
-        More_Equal
+        equal,
+        notEqual,
+        less,
+        lessEqual,
+        more,
+        moreEqual
     };
 
 protected:

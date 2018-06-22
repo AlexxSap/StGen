@@ -85,6 +85,36 @@ void TSelect::TestSimpleWhere()
         QCOMPARE(query, expected);
     }
 
+    {
+        const QString query = select().from("tableName").where(notEqual("id", 35)).toQueryString();
+        const QString expected("select * from tableName where id <> 35;");
+        QCOMPARE(query, expected);
+    }
+
+    {
+        const QString query = select().from("tableName").where(less("id", 35)).toQueryString();
+        const QString expected("select * from tableName where id < 35;");
+        QCOMPARE(query, expected);
+    }
+
+    {
+        const QString query = select().from("tableName").where(lessEqual("id", 35)).toQueryString();
+        const QString expected("select * from tableName where id <= 35;");
+        QCOMPARE(query, expected);
+    }
+
+    {
+        const QString query = select().from("tableName").where(more("id", 35)).toQueryString();
+        const QString expected("select * from tableName where id > 35;");
+        QCOMPARE(query, expected);
+    }
+
+    {
+        const QString query = select().from("tableName").where(moreEqual("id", 35)).toQueryString();
+        const QString expected("select * from tableName where id >= 35;");
+        QCOMPARE(query, expected);
+    }
+
 }
 
 

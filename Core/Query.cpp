@@ -167,12 +167,12 @@ bool Expression::isEmpty() const
 QString AbstractExpression::operationToString(const Operation& type) const
 {
     switch (type) {
-    case Operation::Equal: return " = ";
-    case Operation::Not_Equal: return " <> ";
-    case Operation::Less: return " < ";
-    case Operation::Less_Equal: return " <= ";
-    case Operation::More: return " > ";
-    case Operation::More_Equal: return " >= ";
+    case Operation::equal: return " = ";
+    case Operation::notEqual: return " <> ";
+    case Operation::less: return " < ";
+    case Operation::lessEqual: return " <= ";
+    case Operation::more: return " > ";
+    case Operation::moreEqual: return " >= ";
     }
 
     return QString();
