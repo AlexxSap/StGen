@@ -2,6 +2,7 @@
 #define STGENGLOBAL_H
 
 #include "StGen.h"
+#include "stable.h"
 
 namespace StGenGlobal
 {
@@ -14,9 +15,9 @@ namespace StGenGlobal
     }
 
     template <typename A, typename B>
-    Expr equal(A a, B b)
+    AbsExpr equal(A a, B b, NOT_IS(AbstractExpression, A), NOT_IS(AbstractExpression, B))
     {
-        return EqualExpr::create(std::move(a), std::move(b));
+        return Expr::create(AbstractExpression::Operation::Equal, std::move(a), std::move(b));
     }
 }
 

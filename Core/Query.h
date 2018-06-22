@@ -36,15 +36,28 @@ private:
     QString table_;
 };
 
-class Expression : public AbstractQuery
+class AbstractExpression : public AbstractQuery
 {
 public:
     virtual bool isEmpty() const = 0;
+
+    enum class Operation
+    {
+        Equal,
+        Not_Equal,
+        Less,
+        Less_Equal,
+        More,
+        More_Equal
+    };
+
+protected:
+    QString operationToString(const Operation& type) const;
 };
 
-using Expr = QSharedPointer<Expression>;
+using AbsExpr = QSharedPointer<AbstractExpression>;
 
-class ValueExpression : public Expression
+class ValueExpression : public AbstractExpression
 {
 public:
     ValueExpression(QVariant value);
@@ -58,30 +71,32 @@ private:
 
 using ValueExpr = QSharedPointer<ValueExpression>;
 
-class EqualExpression : public Expression
+class Expression : public AbstractExpression
 {
 public:
-    EqualExpression(QVariant a, QVariant b);
+    Expression(AbstractExpression::Operation type, QVariant a, QVariant b);
 
     virtual QString toQueryString() const override;
     virtual bool isEmpty() const override;
+
 private:
-    Expr a_;
-    Expr b_;
+    AbstractExpression::Operation type_;
+    AbsExpr a_;
+    AbsExpr b_;
 };
 
-using EqualExpr = QSharedPointer<EqualExpression>;
+using Expr = QSharedPointer<Expression>;
 
 class WhereCase : public AbstractQuery
 {
 public:
     WhereCase();
-    WhereCase(Expr expr);
+    WhereCase(AbsExpr expr);
     virtual QString toQueryString() const override;
     bool isEmpty() const;
 
 private:
-    Expr expr_;
+    AbsExpr expr_;
 
 };
 

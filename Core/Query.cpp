@@ -45,7 +45,7 @@ FromQuery::FromQuery(const char *tableName)
 
 QString FromQuery::toQueryString() const
 {
-    return QString("from %1").arg(table_);
+    return QString(" from %1").arg(table_);
 }
 
 SelectQuery::SelectQuery(AbstractDataBaseInterface *base,
@@ -80,13 +80,11 @@ QString SelectQuery::toQueryString() const
 {
     QString result = "select "
             + columns_.toQueryString()
-            + " "
             + from_.toQueryString();
 
     if(!whereExpr_.isEmpty())
     {
-        result += " where "
-                + whereExpr_.toQueryString();
+        result += whereExpr_.toQueryString();
     }
 
     return result+ ";";
@@ -108,7 +106,7 @@ WhereCase::WhereCase()
 
 }
 
-WhereCase::WhereCase(Expr expr)
+WhereCase::WhereCase(AbsExpr expr)
     : expr_(expr)
 {
 
@@ -120,7 +118,7 @@ QString WhereCase::toQueryString() const
     {
         return QString();
     }
-    return expr_->toQueryString();
+    return " where " + expr_->toQueryString();
 }
 
 bool WhereCase::isEmpty() const
@@ -148,19 +146,34 @@ bool ValueExpression::isEmpty() const
     return value_.isNull();
 }
 
-EqualExpression::EqualExpression(QVariant a, QVariant b)
-    : a_(ValueExpr::create(a)),
+Expression::Expression(Operation type, QVariant a, QVariant b)
+    : type_(type),
+      a_(ValueExpr::create(a)),
       b_(ValueExpr::create(b))
 {
 
 }
 
-QString EqualExpression::toQueryString() const
+QString Expression::toQueryString() const
 {
-    return a_->toQueryString() + " = " + b_->toQueryString();
+    return a_->toQueryString() + operationToString(type_) + b_->toQueryString();
 }
 
-bool EqualExpression::isEmpty() const
+bool Expression::isEmpty() const
 {
     return a_.isNull() || b_.isNull();
+}
+
+QString AbstractExpression::operationToString(const Operation& type) const
+{
+    switch (type) {
+    case Operation::Equal: return " = ";
+    case Operation::Not_Equal: return " <> ";
+    case Operation::Less: return " < ";
+    case Operation::Less_Equal: return " <= ";
+    case Operation::More: return " > ";
+    case Operation::More_Equal: return " >= ";
+    }
+
+    return QString();
 }
