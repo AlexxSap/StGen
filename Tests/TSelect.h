@@ -19,6 +19,7 @@ private slots:
     void TestSimpleWhere();
     void TestSimpleWhereWithBind();
     void TestSimpleWhereWithBindFromBase();
+    void TestComplexWhere();
 };
 
 #endif // TSELECT_H

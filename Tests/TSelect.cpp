@@ -180,4 +180,22 @@ void TSelect::TestSimpleWhereWithBindFromBase()
     }
 }
 
+void TSelect::TestComplexWhere()
+{
+    using namespace StGenGlobal;
+
+    {
+        const QString query = select().from("tableName").where(andE(less("id", 35), notEqual("id", 7))).toQueryString();
+        const QString expected("select * from tableName where id < 35 and id <> 7;");
+        QCOMPARE(query, expected);
+    }
+
+    {
+        const QString query = select().from("tableName").where(orE(less("id", 35), notEqual("id", 7))).toQueryString();
+        const QString expected("select * from tableName where id < 35 or id <> 7;");
+        QCOMPARE(query, expected);
+    }
+
+}
+
 

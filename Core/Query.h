@@ -48,14 +48,16 @@ public:
         less,
         lessEqual,
         more,
-        moreEqual
+        moreEqual,
+        andE,
+        orE
     };
 
 protected:
     QString operationToString(const Operation& type) const;
 };
 
-using AbsExpr = QSharedPointer<AbstractExpression>;
+using AbsExprPointer = QSharedPointer<AbstractExpression>;
 
 class ValueExpression : public AbstractExpression
 {
@@ -69,34 +71,37 @@ private:
     QVariant value_;
 };
 
-using ValueExpr = QSharedPointer<ValueExpression>;
+using ValueExprPointer = QSharedPointer<ValueExpression>;
 
 class Expression : public AbstractExpression
 {
 public:
     Expression(AbstractExpression::Operation type, QVariant a, QVariant b);
+    Expression(AbstractExpression::Operation type,
+               AbsExprPointer a,
+               AbsExprPointer b);
 
     virtual QString toQueryString() const override;
     virtual bool isEmpty() const override;
 
 private:
     AbstractExpression::Operation type_;
-    AbsExpr a_;
-    AbsExpr b_;
+    AbsExprPointer a_;
+    AbsExprPointer b_;
 };
 
-using Expr = QSharedPointer<Expression>;
+using ExprPointer = QSharedPointer<Expression>;
 
 class WhereCase : public AbstractQuery
 {
 public:
     WhereCase();
-    WhereCase(AbsExpr expr);
+    WhereCase(AbsExprPointer expr);
     virtual QString toQueryString() const override;
     bool isEmpty() const;
 
 private:
-    AbsExpr expr_;
+    AbsExprPointer expr_;
 
 };
 

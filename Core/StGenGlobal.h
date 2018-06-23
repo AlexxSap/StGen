@@ -5,11 +5,10 @@
 #include "stable.h"
 
 #define SimpleTypeOperation(name) template <typename A, typename B> \
-AbsExpr name(A a, B b, NOT_IS(AbstractExpression, A), NOT_IS(AbstractExpression, B)) \
+AbsExprPointer name(A a, B b, NOT_IS(AbstractExpression, A), NOT_IS(AbstractExpression, B)) \
 { \
-    return Expr::create(AbstractExpression::Operation::name, std::move(a), std::move(b)); \
+    return ExprPointer::create(AbstractExpression::Operation::name, std::move(a), std::move(b)); \
 }
-
 
 namespace StGenGlobal
 {
@@ -33,6 +32,15 @@ namespace StGenGlobal
     SimpleTypeOperation(more)
     SimpleTypeOperation(moreEqual)
 
+    AbsExprPointer andE(AbsExprPointer a, AbsExprPointer b)
+    {
+        return ExprPointer::create(AbstractExpression::Operation::andE, std::move(a), std::move(b));
+    }
+
+    AbsExprPointer orE(AbsExprPointer a, AbsExprPointer b)
+    {
+        return ExprPointer::create(AbstractExpression::Operation::orE, std::move(a), std::move(b));
+    }
 }
 
 #endif // STGENGLOBAL_H

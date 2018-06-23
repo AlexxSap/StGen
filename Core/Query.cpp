@@ -126,7 +126,7 @@ WhereCase::WhereCase()
 
 }
 
-WhereCase::WhereCase(AbsExpr expr)
+WhereCase::WhereCase(AbsExprPointer expr)
     : expr_(expr)
 {
 
@@ -168,8 +168,18 @@ bool ValueExpression::isEmpty() const
 
 Expression::Expression(Operation type, QVariant a, QVariant b)
     : type_(type),
-      a_(ValueExpr::create(a)),
-      b_(ValueExpr::create(b))
+      a_(ValueExprPointer::create(a)),
+      b_(ValueExprPointer::create(b))
+{
+
+}
+
+Expression::Expression(AbstractExpression::Operation type,
+                      AbsExprPointer a,
+                      AbsExprPointer b)
+    : type_(type),
+      a_(a),
+      b_(b)
 {
 
 }
@@ -193,6 +203,9 @@ QString AbstractExpression::operationToString(const Operation& type) const
     case Operation::lessEqual: return " <= ";
     case Operation::more: return " > ";
     case Operation::moreEqual: return " >= ";
+    case Operation::andE: return " and ";
+    case Operation::orE: return " or ";
+
     }
 
     return QString();
