@@ -9,11 +9,16 @@ class TSelect : public QObject
 public:
     explicit TSelect(QObject *parent = nullptr);
 
+private:
+    void init();
+
 private slots:
     void TestSimpleSelect();
     void TestSimpleSelectColumns();
     void TestSimpleSelectFromBase();
     void TestSimpleWhere();
+    void TestSimpleWhereWithBind();
+    void TestSimpleWhereWithBindFromBase();
 };
 
 #endif // TSELECT_H

@@ -21,6 +21,11 @@ namespace StGenGlobal
         return sqlBuilder->select(ColumnsQuery(conv(args...)));
     }
 
+    QString bind(const QString &id)
+    {
+        return ":" + id;
+    }
+
     SimpleTypeOperation(equal)
     SimpleTypeOperation(notEqual)
     SimpleTypeOperation(less)

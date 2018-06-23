@@ -7,6 +7,7 @@
 #include <QStringList>
 #include <QSharedPointer>
 #include <QDate>
+#include <QSqlError>
 
 #include <type_traits>
 

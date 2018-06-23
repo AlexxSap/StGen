@@ -9,8 +9,12 @@
 TSelect::TSelect(QObject *parent)
     : QObject(parent)
 {
-    SqliteBuilder builder = StGen::createSqlBuilder(nullptr);
-    StGenGlobal::sqlBuilder = builder;
+    init();
+}
+
+void TSelect::init()
+{
+    StGenGlobal::sqlBuilder = StGen::createSqlBuilder(nullptr);;
 }
 
 void TSelect::TestSimpleSelect()
@@ -115,6 +119,65 @@ void TSelect::TestSimpleWhere()
         QCOMPARE(query, expected);
     }
 
+}
+
+void TSelect::TestSimpleWhereWithBind()
+{
+    using namespace StGenGlobal;
+
+    {
+        const QString query = select().from("tableName").where(equal("id", bind("id"))).toQueryString();
+        const QString expected("select * from tableName where id = :id;");
+        QCOMPARE(query, expected);
+    }
+}
+
+void TSelect::TestSimpleWhereWithBindFromBase()
+{
+    const QString dataBaseName("TestSimpleWhereWithBindFromBase.db");
+    SqliteInterface b(DataBaseSettings(dataBaseName), false);
+    TestBase base(&b);
+
+    {
+        SqlQuery query = base->query();
+        query->exec("create table table1(id integer, value varchar(50));");
+        query->exec("insert into table1 values(1, 'value1');");
+        query->exec("insert into table1 values(2, 'value2');");
+        query->exec("insert into table1 values(3, 'value3');");
+        query->exec("insert into table1 values(4, 'value4');");
+    }
+
+    StGenGlobal::sqlBuilder = StGen::createSqlBuilder(&b);
+    using namespace StGenGlobal;
+
+    {
+        SelectQuery query = select("value").from("table1").where(equal("id", bind("id"))).prepare();
+        query.bind("id", 2);
+        const QueryResult result = query.exec();
+
+        QVERIFY(result.next());
+        QCOMPARE(result.value("value").toString(), "value2");
+    }
+
+    {
+        QHash<int, QString> expected;
+        expected.insert(1, "value1");
+        expected.insert(2, "value2");
+        expected.insert(3, "value3");
+        expected.insert(4, "value4");
+
+        QSet<int> ids;
+        SelectQuery query = select("value").from("table1").where(equal("id", bind("id"))).prepare();
+
+        foreach (auto id, ids)
+        {
+            query.bind("id", id);
+            const QueryResult result = query.exec();
+            QVERIFY(result.next());
+            QCOMPARE(result.value("value").toString(), expected[id]);
+        }
+
+    }
 }
 
 

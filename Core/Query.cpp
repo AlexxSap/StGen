@@ -68,12 +68,32 @@ SelectQuery &SelectQuery::where(WhereCase whereCond)
     return *this;
 }
 
+SelectQuery &SelectQuery::prepare()
+{
+    query_ = this->query();
+    if(!query_->prepare(toQueryString()))
+    {
+        qWarning() << query_->lastError();
+    }
+    return *this;
+}
+
+void SelectQuery::bind(const QString &id, const QVariant &value)
+{
+    query_->bindValue(":" + id, value);
+}
+
 QueryResult SelectQuery::exec()
 {
-    SqlQuery query = this->query();
-    query->prepare(toQueryString());
-    query->exec();
-    return QueryResult(query);
+    if(query_.isNull())
+    {
+        prepare();
+    }
+    if(!query_->exec())
+    {
+        qWarning() << query_->lastError();
+    }
+    return QueryResult(query_);
 }
 
 QString SelectQuery::toQueryString() const

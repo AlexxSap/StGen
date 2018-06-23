@@ -119,6 +119,9 @@ public:
                 ColumnsQuery columns);
     SelectQuery& from(FromQuery table);
     SelectQuery& where(WhereCase whereCond);
+    SelectQuery& prepare();
+
+    void bind(const QString &id, const QVariant& value);
 
     virtual QueryResult exec() override;
     virtual QString toQueryString() const override;
@@ -127,6 +130,8 @@ private:
     ColumnsQuery columns_;
     FromQuery from_;
     WhereCase whereExpr_;
+
+    SqlQuery query_;
 };
 
 
