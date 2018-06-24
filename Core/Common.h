@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "stable.h"
+#include <QStringList>
 #include <initializer_list>
 
 template <typename... Args>

@@ -1,7 +1,6 @@
 #ifndef QUERYRESULT_H
 #define QUERYRESULT_H
 
-#include "stable.h"
 #include "DataBaseInterface.h"
 
 class QueryResult

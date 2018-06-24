@@ -1,6 +1,5 @@
 #include "TBase.h"
 
-#include <QDebug>
 #include "Utils.h"
 
 TBase::TBase(QObject *parent)

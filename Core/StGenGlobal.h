@@ -2,7 +2,6 @@
 #define STGENGLOBAL_H
 
 #include "StGen.h"
-#include "stable.h"
 
 #define SimpleTypeOperation(name) template <typename A, typename B> \
 AbsExprPointer name(A a, B b, NOT_IS(AbstractExpression, A), NOT_IS(AbstractExpression, B)) \
@@ -23,6 +22,11 @@ namespace StGenGlobal
     QString bind(const QString &id)
     {
         return ":" + id;
+    }
+
+    CreateTableQuery createTable(QString name)
+    {
+        return sqlBuilder->createTable(std::move(name));
     }
 
     SimpleTypeOperation(equal)

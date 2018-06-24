@@ -210,3 +210,54 @@ QString AbstractExpression::operationToString(const Operation& type) const
 
     return QString();
 }
+
+CreateTableQuery::CreateTableQuery(AbstractDataBaseInterface *base,
+                                   QString name)
+    : AbstractExecuteQuery(base),
+      tableName_(std::move(name))
+{
+
+}
+
+CreateTableQuery &CreateTableQuery::addColumn(QString name,
+                                              QString type)
+{
+    return addColumn(std::move(name), std::move(type));
+}
+
+CreateTableQuery &CreateTableQuery::addColumn(TableColumn column)
+{
+    columns_.append(std::move(column));
+    return *this;
+}
+
+QueryResult CreateTableQuery::exec()
+{
+    return QueryResult(SqlQuery());
+}
+
+QString CreateTableQuery::toQueryString() const
+{
+    return QString();
+}
+
+QString ColumnType::Integer()
+{
+    return QString("int");
+}
+
+QString ColumnType::String(const int value)
+{
+    return QString("varchar(%1)").arg(value);
+}
+
+TableColumn::TableColumn(QString name, QString type)
+    : name_(name), type_(type)
+{
+
+}
+
+QString TableColumn::toQueryString() const
+{
+    return name_ + " " + type_;
+}

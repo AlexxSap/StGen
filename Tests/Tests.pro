@@ -11,15 +11,17 @@ INCLUDEPATH += ../Core
 
 SOURCES += \
         main.cpp \
+    Utils.cpp \
     TSelect.cpp \
     TCommon.cpp \
     TBase.cpp \
-    Utils.cpp
+    TCreate.cpp
 
 HEADERS += \
+    Utils.h \
     TSelect.h \
     TCommon.h \
     TBase.h \
-    Utils.h
+    TCreate.h
 
 include(../Core/Core.pri)

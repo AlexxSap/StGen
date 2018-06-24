@@ -1,10 +1,8 @@
 #include "TSelect.h"
 
-#include <QtTest>
-#include "StGen.h"
 #include "Utils.h"
 #include "QueryResult.h"
-#include <StGenGlobal.h>
+#include "StGenGlobal.h"
 
 TSelect::TSelect(QObject *parent)
     : QObject(parent)

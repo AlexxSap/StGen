@@ -1,7 +1,6 @@
 #ifndef QUERY_H
 #define QUERY_H
 
-#include "stable.h"
 #include "QueryResult.h"
 
 class AbstractQuery
@@ -137,6 +136,41 @@ private:
     WhereCase whereExpr_;
 
     SqlQuery query_;
+};
+
+class ColumnType
+{
+public:
+    static QString Integer();
+    static QString String(const int value);
+};
+
+class TableColumn : public AbstractQuery
+{
+public:
+    TableColumn(QString name, QString type);
+
+    virtual QString toQueryString() const override;
+
+private:
+    QString name_;
+    QString type_;
+};
+
+class CreateTableQuery : public AbstractExecuteQuery
+{
+public:
+    CreateTableQuery(AbstractDataBaseInterface* base,
+                     QString name);
+    CreateTableQuery& addColumn(QString name, QString type);
+    CreateTableQuery& addColumn(TableColumn column);
+
+    virtual QueryResult exec() override;
+    virtual QString toQueryString() const override;
+
+private:
+    QString tableName_;
+    QList<TableColumn> columns_;
 };
 
 

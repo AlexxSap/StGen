@@ -2,6 +2,8 @@
 #define UTILS_H
 
 #include "../Core/DataBaseInterface.h"
+#include <QtTest>
+#include <QDebug>
 
 class TestBase
 {
