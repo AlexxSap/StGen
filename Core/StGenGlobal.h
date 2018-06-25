@@ -11,23 +11,18 @@ AbsExprPointer name(A a, B b, NOT_IS(AbstractExpression, A), NOT_IS(AbstractExpr
 
 namespace StGenGlobal
 {
-    AbstractBuilder sqlBuilder = nullptr;
+    AbstractBuilder getBuilder();
+    void setBuilder(AbstractBuilder builder);
 
     template <typename... Args>
     SelectQuery select(Args ... args)
     {
-        return sqlBuilder->select(ColumnsQuery(conv(args...)));
+        return getBuilder()->select(ColumnsQuery(conv(args...)));
     }
 
-    QString bind(const QString &id)
-    {
-        return ":" + id;
-    }
+    QString bind(const QString &id);
 
-    CreateTableQuery createTable(QString name)
-    {
-        return sqlBuilder->createTable(std::move(name));
-    }
+    CreateTableQuery createTable(QString name);
 
     SimpleTypeOperation(equal)
     SimpleTypeOperation(notEqual)
@@ -36,15 +31,9 @@ namespace StGenGlobal
     SimpleTypeOperation(more)
     SimpleTypeOperation(moreEqual)
 
-    AbsExprPointer andE(AbsExprPointer a, AbsExprPointer b)
-    {
-        return ExprPointer::create(AbstractExpression::Operation::andE, std::move(a), std::move(b));
-    }
+    AbsExprPointer andE(AbsExprPointer a, AbsExprPointer b);
 
-    AbsExprPointer orE(AbsExprPointer a, AbsExprPointer b)
-    {
-        return ExprPointer::create(AbstractExpression::Operation::orE, std::move(a), std::move(b));
-    }
+    AbsExprPointer orE(AbsExprPointer a, AbsExprPointer b);
 }
 
 #endif // STGENGLOBAL_H

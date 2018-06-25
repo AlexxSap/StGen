@@ -12,7 +12,7 @@ TSelect::TSelect(QObject *parent)
 
 void TSelect::init()
 {
-    StGenGlobal::sqlBuilder = StGen::createSqlBuilder(nullptr);;
+    StGenGlobal::setBuilder(StGen::createSqlBuilder(nullptr));
 }
 
 void TSelect::TestSimpleSelect()
@@ -145,7 +145,7 @@ void TSelect::TestSimpleWhereWithBindFromBase()
         query->exec("insert into table1 values(4, 'value4');");
     }
 
-    StGenGlobal::sqlBuilder = StGen::createSqlBuilder(&b);
+    StGenGlobal::setBuilder(StGen::createSqlBuilder(&b));
     using namespace StGenGlobal;
 
     {

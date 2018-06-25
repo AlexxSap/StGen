@@ -222,7 +222,7 @@ CreateTableQuery::CreateTableQuery(AbstractDataBaseInterface *base,
 CreateTableQuery &CreateTableQuery::addColumn(QString name,
                                               QString type)
 {
-    return addColumn(std::move(name), std::move(type));
+    return addColumn(TableColumn(std::move(name), std::move(type)));
 }
 
 CreateTableQuery &CreateTableQuery::addColumn(TableColumn column)
@@ -238,12 +238,19 @@ QueryResult CreateTableQuery::exec()
 
 QString CreateTableQuery::toQueryString() const
 {
-    return QString();
+    QString result("create if exists table %1 (%2);");
+
+    QStringList lst;
+    foreach (const TableColumn &column, columns_)
+    {
+        lst << column.toQueryString();
+    }
+    return result.arg(tableName_).arg(lst.join(", "));
 }
 
 QString ColumnType::Integer()
 {
-    return QString("int");
+    return QString("integer");
 }
 
 QString ColumnType::String(const int value)

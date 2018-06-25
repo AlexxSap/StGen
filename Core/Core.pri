@@ -7,7 +7,8 @@ SOURCES += \
     $$PWD/Common.cpp \
     $$PWD/DataBaseInterface.cpp \
     $$PWD/QueryResult.cpp \
-    $$PWD/Query.cpp
+    $$PWD/Query.cpp \
+    $$PWD/StGenGlobal.cpp
 
 HEADERS += \
     $$PWD/StGen.h \
