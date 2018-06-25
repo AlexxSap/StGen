@@ -101,19 +101,21 @@ public:
 
 private:
     AbsExprPointer expr_;
-
 };
 
 class AbstractExecuteQuery : public AbstractQuery
 {
 public:
     AbstractExecuteQuery(AbstractDataBaseInterface* base);
-    virtual QueryResult exec() = 0;
-
+    QueryResult exec();
     SqlQuery query() const;
 
-private:
+protected:
+    void prepare();
+
+protected:
     AbstractDataBaseInterface* base_;
+    SqlQuery query_;
 };
 
 class SelectQuery : public AbstractExecuteQuery
@@ -127,15 +129,12 @@ public:
 
     void bind(const QString &id, const QVariant& value);
 
-    virtual QueryResult exec() override;
     virtual QString toQueryString() const override;
 
 private:
     ColumnsQuery columns_;
     FromQuery from_;
     WhereCase whereExpr_;
-
-    SqlQuery query_;
 };
 
 class ColumnType
@@ -164,8 +163,8 @@ public:
                      QString name);
     CreateTableQuery& addColumn(QString name, QString type);
     CreateTableQuery& addColumn(TableColumn column);
+    CreateTableQuery& prepare();
 
-    virtual QueryResult exec() override;
     virtual QString toQueryString() const override;
 
 private:

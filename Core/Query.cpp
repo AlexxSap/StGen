@@ -70,30 +70,13 @@ SelectQuery &SelectQuery::where(WhereCase whereCond)
 
 SelectQuery &SelectQuery::prepare()
 {
-    query_ = this->query();
-    if(!query_->prepare(toQueryString()))
-    {
-        qWarning() << query_->lastError();
-    }
+    AbstractExecuteQuery::prepare();
     return *this;
 }
 
 void SelectQuery::bind(const QString &id, const QVariant &value)
 {
     query_->bindValue(":" + id, value);
-}
-
-QueryResult SelectQuery::exec()
-{
-    if(query_.isNull())
-    {
-        prepare();
-    }
-    if(!query_->exec())
-    {
-        qWarning() << query_->lastError();
-    }
-    return QueryResult(query_);
 }
 
 QString SelectQuery::toQueryString() const
@@ -116,9 +99,31 @@ AbstractExecuteQuery::AbstractExecuteQuery(AbstractDataBaseInterface *base)
 
 }
 
+QueryResult AbstractExecuteQuery::exec()
+{
+    if(query_.isNull())
+    {
+        prepare();
+    }
+    if(!query_->exec())
+    {
+        qWarning() << query_->lastError();
+    }
+    return QueryResult(query_);
+}
+
 SqlQuery AbstractExecuteQuery::query() const
 {
     return base_->query();
+}
+
+void AbstractExecuteQuery::prepare()
+{
+    query_ = this->query();
+    if(!query_->prepare(toQueryString()))
+    {
+        qWarning() << query_->lastError();
+    }
 }
 
 WhereCase::WhereCase()
@@ -231,14 +236,15 @@ CreateTableQuery &CreateTableQuery::addColumn(TableColumn column)
     return *this;
 }
 
-QueryResult CreateTableQuery::exec()
+CreateTableQuery &CreateTableQuery::prepare()
 {
-    return QueryResult(SqlQuery());
+    AbstractExecuteQuery::prepare();
+    return *this;
 }
 
 QString CreateTableQuery::toQueryString() const
 {
-    QString result("create if exists table %1 (%2);");
+    QString result("create table if exists %1 (%2);");
 
     QStringList lst;
     foreach (const TableColumn &column, columns_)

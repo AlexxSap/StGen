@@ -19,7 +19,7 @@ void TCreate::TestSimpleCreateTable()
                 .addColumn("value", ColumnType::String(50))
                 .toQueryString();
 
-        const QString expected("create if exists table table1 (id integer, value varchar(50));");
+        const QString expected("create table if exists table1 (id integer, value varchar(50));");
         QCOMPARE(query, expected);
     }
 
@@ -29,7 +29,7 @@ void TCreate::TestSimpleCreateTable()
                 .addColumn(TableColumn("value", ColumnType::String(50)))
                 .toQueryString();
 
-        const QString expected("create if exists table table1 (id integer, value varchar(50));");
+        const QString expected("create table if exists table1 (id integer, value varchar(50));");
         QCOMPARE(query, expected);
     }
 
