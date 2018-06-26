@@ -31,3 +31,8 @@ AbstractBuilder StGenGlobal::getBuilder()
 {
     return sqlBuilder;
 }
+
+QString StGenGlobal::distinct(const QString &column)
+{
+    return "distinct " + column;
+}

@@ -196,4 +196,15 @@ void TSelect::TestComplexWhere()
 
 }
 
+void TSelect::TestDistinct()
+{
+    using namespace StGenGlobal;
+
+    {
+        const QString query = select(distinct("col1"), "col2").from("tableName").toQueryString();
+        const QString expected("select distinct col1, col2 from tableName;");
+        QCOMPARE(query, expected);
+    }
+}
+
 

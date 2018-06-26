@@ -21,6 +21,7 @@ namespace StGenGlobal
     }
 
     QString bind(const QString &id);
+    QString distinct(const QString &column);
 
     CreateTableQuery createTable(QString name);
 
