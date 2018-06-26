@@ -19,7 +19,7 @@ void TCreate::TestSimpleCreateTable()
                 .addColumn("value", ColumnType::String(50))
                 .toQueryString();
 
-        const QString expected("create table if exists table1 (id integer, value varchar(50));");
+        const QString expected("create table if not exists table1 (id integer, value varchar(50));");
         QCOMPARE(query, expected);
     }
 
@@ -29,8 +29,43 @@ void TCreate::TestSimpleCreateTable()
                 .addColumn(TableColumn("value", ColumnType::String(50)))
                 .toQueryString();
 
-        const QString expected("create table if exists table1 (id integer, value varchar(50));");
+        const QString expected("create table if not exists table1 (id integer, value varchar(50));");
         QCOMPARE(query, expected);
     }
+}
 
+void TCreate::TestSimpleCreateTableOnBase()
+{
+    const QString dataBaseName("TestSimpleCreateTableOnBase.db");
+    SqliteInterface b(DataBaseSettings(dataBaseName), false);
+    TestBase base(&b);
+
+    StGenGlobal::setBuilder(StGen::createSqlBuilder(&b));
+    using namespace StGenGlobal;
+
+    createTable("table1")
+            .addColumn("id", ColumnType::Integer())
+            .addColumn("value", ColumnType::String(50))
+            .exec();
+
+    QHash<int, QString> expected;
+    {
+        expected.insert(1, "value1");
+        expected.insert(2, "value2");
+        SqlQuery query = base->query();
+        query->exec("insert into table1 values(1, 'value1');");
+        query->exec("insert into table1 values(2, 'value2');");
+    }
+
+    {
+        SqlQuery query = base->query();
+        query->exec("select id, value from table1;");
+
+        QHash<int, QString> actual;
+        while(query->next())
+        {
+            actual.insert(query->value("id").toInt(), query->value("value").toString());
+        }
+        QCOMPARE(actual, expected);
+    }
 }

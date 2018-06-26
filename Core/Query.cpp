@@ -244,7 +244,7 @@ CreateTableQuery &CreateTableQuery::prepare()
 
 QString CreateTableQuery::toQueryString() const
 {
-    QString result("create table if exists %1 (%2);");
+    QString result("create table if not exists %1 (%2);");
 
     QStringList lst;
     foreach (const TableColumn &column, columns_)

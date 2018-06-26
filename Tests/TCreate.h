@@ -11,6 +11,7 @@ public:
 
 private slots:
     void TestSimpleCreateTable();
+    void TestSimpleCreateTableOnBase();
 };
 
 #endif // TCREATE_H
