@@ -69,3 +69,22 @@ void TCreate::TestSimpleCreateTableOnBase()
         QCOMPARE(actual, expected);
     }
 }
+
+void TCreate::TestPrimaryKey()
+{
+    StGenGlobal::setBuilder(StGen::createSqlBuilder(nullptr));
+    using namespace StGenGlobal;
+
+    {
+        const QString query = createTable("table1")
+                .addColumn("user", ColumnType::Integer())
+                .addColumn("current", ColumnType::Date())
+                .addColumn("value", ColumnType::String(50))
+                .setPrimaryKey("user", "date")
+                .toQueryString();
+
+        const QString expected("create table if not exists table1 (user integer, current date, value varchar(50), primary key(user, date));");
+        QCOMPARE(query, expected);
+    }
+
+}

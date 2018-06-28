@@ -251,7 +251,15 @@ QString CreateTableQuery::toQueryString() const
     {
         lst << column.toQueryString();
     }
-    return result.arg(tableName_).arg(lst.join(", "));
+
+    if(!primary_.isEmpty())
+    {
+        lst << "primary key(" + primary_.join(", ") + ")";
+    }
+
+    return result
+            .arg(tableName_)
+            .arg(lst.join(", "));
 }
 
 QString ColumnType::Integer()
@@ -262,6 +270,11 @@ QString ColumnType::Integer()
 QString ColumnType::String(const int value)
 {
     return QString("varchar(%1)").arg(value);
+}
+
+QString ColumnType::Date()
+{
+    return "date";
 }
 
 TableColumn::TableColumn(QString name, QString type)

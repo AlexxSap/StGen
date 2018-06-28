@@ -12,6 +12,7 @@ public:
 private slots:
     void TestSimpleCreateTable();
     void TestSimpleCreateTableOnBase();
+    void TestPrimaryKey();
 };
 
 #endif // TCREATE_H

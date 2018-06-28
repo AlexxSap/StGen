@@ -142,6 +142,7 @@ class ColumnType
 public:
     static QString Integer();
     static QString String(const int value);
+    static QString Date();
 };
 
 class TableColumn : public AbstractQuery
@@ -165,11 +166,20 @@ public:
     CreateTableQuery& addColumn(TableColumn column);
     CreateTableQuery& prepare();
 
+    template <typename... Args>
+    CreateTableQuery& setPrimaryKey(Args ... args)
+    {
+        primary_ = conv(args...);
+        return *this;
+    }
+
+
     virtual QString toQueryString() const override;
 
 private:
     QString tableName_;
     QList<TableColumn> columns_;
+    QStringList primary_;
 };
 
 
