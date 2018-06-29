@@ -88,3 +88,27 @@ void TCreate::TestPrimaryKey()
     }
 
 }
+
+void TCreate::TestFlags()
+{
+    StGenGlobal::setBuilder(StGen::createSqlBuilder(nullptr));
+    using namespace StGenGlobal;
+
+    {
+        const QString query = createTable("table1")
+                .addColumn("user", ColumnType::Integer(), autoincrement())
+                .addColumn("userID", ColumnType::Integer(), Flags() << unique())
+                .addColumn("order", ColumnType::Date(), Flags() << notNull())
+                .addColumn("current", ColumnType::Date(), Flags() << defaultValue(Default::Date))
+                .addColumn("value", ColumnType::String(50), Flags() << defaultValue("usr"))
+                .toQueryString();
+
+        const QString expected("create table if not exists table1 ("
+                               "user integer autoincrement, "
+                               "userId integer unique, "
+                               "order date not null, "
+                               "current date default current_date, "
+                               "value varchar(50) default 'usr');");
+        QCOMPARE(query, expected);
+    }
+}
