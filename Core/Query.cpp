@@ -225,9 +225,10 @@ CreateTableQuery::CreateTableQuery(AbstractDataBaseInterface *base,
 }
 
 CreateTableQuery &CreateTableQuery::addColumn(QString name,
-                                              QString type)
+                                              QString type,
+                                              Flags flags)
 {
-    return addColumn(TableColumn(std::move(name), std::move(type)));
+    return addColumn(TableColumn(std::move(name), std::move(type), std::move(flags)));
 }
 
 CreateTableQuery &CreateTableQuery::addColumn(TableColumn column)
@@ -277,13 +278,21 @@ QString ColumnType::Date()
     return "date";
 }
 
-TableColumn::TableColumn(QString name, QString type)
-    : name_(name), type_(type)
+TableColumn::TableColumn(QString name,
+                         QString type,
+                         Flags flags)
+    : name_(std::move(name)),
+      type_(std::move(type)),
+      flags_(std::move(flags))
 {
 
 }
 
 QString TableColumn::toQueryString() const
 {
-    return name_ + " " + type_;
+    return name_ + " "
+            + type_
+            + (flags_.isEmpty()
+               ? ""
+               : (" " + flags_.join(" ")));
 }

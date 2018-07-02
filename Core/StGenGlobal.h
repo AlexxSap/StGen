@@ -22,6 +22,17 @@ namespace StGenGlobal
 
     QString bind(const QString &id);
     QString distinct(const QString &column);
+    QStringList autoincrement();
+    QStringList unique();
+    QStringList notNull();
+
+    enum class Default
+    {
+        Date
+    };
+
+    QStringList defaultValue(const Default value);
+    QStringList defaultValue(const QString& value);
 
     CreateTableQuery createTable(QString name);
 

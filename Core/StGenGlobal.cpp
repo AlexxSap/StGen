@@ -36,3 +36,33 @@ QString StGenGlobal::distinct(const QString &column)
 {
     return "distinct " + column;
 }
+
+QStringList StGenGlobal::autoincrement()
+{
+    return QStringList() << "autoincrement";
+}
+
+QStringList StGenGlobal::unique()
+{
+    return QStringList() << "unique";
+}
+
+QStringList StGenGlobal::notNull()
+{
+    return QStringList() << "not null";
+}
+
+QStringList StGenGlobal::defaultValue(const Default value)
+{
+    QString strValue;
+    switch (value) {
+    case Default::Date: strValue = "current_date"; break;
+    }
+
+    return QStringList() << QString("default %1").arg(strValue);
+}
+
+QStringList StGenGlobal::defaultValue(const QString &value)
+{
+    return QStringList() << QString("default '%1'").arg(value);
+}

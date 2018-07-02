@@ -105,7 +105,7 @@ void TCreate::TestFlags()
 
         const QString expected("create table if not exists table1 ("
                                "user integer autoincrement, "
-                               "userId integer unique, "
+                               "userID integer unique, "
                                "order date not null, "
                                "current date default current_date, "
                                "value varchar(50) default 'usr');");

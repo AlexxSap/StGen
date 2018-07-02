@@ -145,16 +145,21 @@ public:
     static QString Date();
 };
 
+using Flags = QStringList;
+
 class TableColumn : public AbstractQuery
 {
 public:
-    TableColumn(QString name, QString type);
+    TableColumn(QString name,
+                QString type,
+                Flags flags = Flags());
 
     virtual QString toQueryString() const override;
 
 private:
     QString name_;
     QString type_;
+    Flags flags_;
 };
 
 class CreateTableQuery : public AbstractExecuteQuery
@@ -162,7 +167,9 @@ class CreateTableQuery : public AbstractExecuteQuery
 public:
     CreateTableQuery(AbstractDataBaseInterface* base,
                      QString name);
-    CreateTableQuery& addColumn(QString name, QString type);
+    CreateTableQuery& addColumn(QString name,
+                                QString type,
+                                Flags flags = Flags());
     CreateTableQuery& addColumn(TableColumn column);
     CreateTableQuery& prepare();
 
