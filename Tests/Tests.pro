@@ -15,13 +15,15 @@ SOURCES += \
     TSelect.cpp \
     TCommon.cpp \
     TBase.cpp \
-    TCreate.cpp
+    TCreate.cpp \
+    TInsert.cpp
 
 HEADERS += \
     Utils.h \
     TSelect.h \
     TCommon.h \
     TBase.h \
-    TCreate.h
+    TCreate.h \
+    TInsert.h
 
 include(../Core/Core.pri)
