@@ -11,6 +11,7 @@ public:
 
 private slots:
     void TestSimpleInsert();
+    void TestSimpleInsertToBase();
     void TestInsertFromSelect();
 };
 

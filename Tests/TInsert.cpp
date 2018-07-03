@@ -36,6 +36,41 @@ void TInsert::TestSimpleInsert()
     }
 }
 
+void TInsert::TestSimpleInsertToBase()
+{
+    const QString dataBaseName("TestSimpleInsertToBase.db");
+    SqliteInterface b(DataBaseSettings(dataBaseName), false);
+    TestBase base(&b);
+
+    StGenGlobal::setBuilder(StGen::createSqlBuilder(&b));
+    using namespace StGenGlobal;
+
+    createTable("table1")
+            .addColumn("id", ColumnType::Integer())
+            .addColumn("value", ColumnType::String(5))
+            .exec();
+
+    insert("id", "value")
+            .into("table1")
+            .values(1, "aaaaa")
+            .values(2, "bbbbb")
+            .values(3, "ccccc")
+            .exec();
+
+    QHash<int, QString> expected;
+    expected.insert(1, "aaaaa");
+    expected.insert(2, "bbbbb");
+    expected.insert(3, "ccccc");
+
+    const QueryResult result = select("id", "value").from("table1").exec();
+    QHash<int, QString> actual;
+    while(result.next())
+    {
+        actual.insert(result.value("id").toInt(), result.value("value").toString());
+    }
+    QCOMPARE(actual, expected);
+}
+
 void TInsert::TestInsertFromSelect()
 {
 
