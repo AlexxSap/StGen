@@ -167,12 +167,23 @@ private:
     Flags flags_;
 };
 
+class Values : public AbstractQuery
+{
+public:
+    Values& operator <<(QVariantList values);
+    virtual QString toQueryString() const override;
+
+    bool isEmpty() const;
+
+private:
+    QList<QVariantList> values_;
+};
+
 class InsertQuery : public AbstractExecuteQuery
 {
 public:
     InsertQuery(AbstractDataBaseInterface* base,
                 ColumnsQuery columns);
-
     InsertQuery& into(QString tableName);
 
     template <typename... Args>
@@ -191,14 +202,14 @@ public:
         return *this;
     }
 
+    InsertQuery& values(Values values);
     InsertQuery& from(SelectQuery selectQuery);
-
     virtual QString toQueryString() const override;
 
 private:
     ColumnsQuery columns_;
     QString tableName_;
-    QList<QVariantList> values_;
+    Values values_;
     SelectQuery selectQuery_;
 };
 

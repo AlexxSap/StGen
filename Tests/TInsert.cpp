@@ -34,6 +34,19 @@ void TInsert::TestSimpleInsert()
         const QString expected("insert into table1(col1, col2) values('a1', 'b1'),('a2', 'b2'),('a3', 'b3');");
         QCOMPARE(query, expected);
     }
+
+    {
+        const QString query = insert("col1", "col2")
+                .into("table1")
+                .values(Values()
+                        << QVariantList{"a1", "b1"}
+                        << QVariantList{"a2", "b2"}
+                        << QVariantList{"a3", "b3"})
+                .toQueryString();
+
+        const QString expected("insert into table1(col1, col2) values('a1', 'b1'),('a2', 'b2'),('a3', 'b3');");
+        QCOMPARE(query, expected);
+    }
 }
 
 void TInsert::TestSimpleInsertToBase()

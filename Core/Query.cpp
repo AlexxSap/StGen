@@ -332,34 +332,24 @@ InsertQuery &InsertQuery::into(QString tableName)
     return *this;
 }
 
+InsertQuery &InsertQuery::values(Values values)
+{
+    values_ = std::move(values);
+    return *this;
+}
+
 InsertQuery &InsertQuery::from(SelectQuery selectQuery)
 {
     selectQuery_ = std::move(selectQuery);
     return *this;
 }
 
-/// TODO вынести значения из values_ в отдельный класс
 QString InsertQuery::toQueryString() const
 {
-    const QString pattern("insert into %1(%2) %3;");
-
     QString value;
     if(!values_.isEmpty() && selectQuery_.isEmpty())
     {
-        const QString valuesPattern("(%1)");
-
-        QStringList valuesList;
-        foreach (const QVariantList& lst, values_)
-        {
-            QStringList values;
-            foreach (const QVariant& var, lst)
-            {
-                values << "'" + var.toString() + "'";
-            }
-            valuesList << valuesPattern.arg(values.join(", "));
-        }
-
-        value = "values" + valuesList.join(",");
+        value = values_.toQueryString();
     }
     else if(values_.isEmpty() && !selectQuery_.isEmpty())
     {
@@ -367,7 +357,34 @@ QString InsertQuery::toQueryString() const
         value = value.mid(0, value.size() - 1);
     }
 
-    return pattern.arg(tableName_)
+    return QString("insert into %1(%2) %3;").arg(tableName_)
             .arg(columns_.toQueryString())
             .arg(value);
+}
+
+Values &Values::operator <<(QVariantList values)
+{
+    values_ << std::move(values);
+    return *this;
+}
+
+QString Values::toQueryString() const
+{
+    QStringList valuesList;
+    foreach (const QVariantList& lst, values_)
+    {
+        QStringList values;
+        foreach (const QVariant& var, lst)
+        {
+            values << "'" + var.toString() + "'";
+        }
+        valuesList << "(" + values.join(", ") + ")";
+    }
+
+    return "values" + valuesList.join(",");
+}
+
+bool Values::isEmpty() const
+{
+    return values_.isEmpty();
 }
