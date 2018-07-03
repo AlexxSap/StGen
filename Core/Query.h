@@ -32,6 +32,7 @@ public:
     FromQuery(const char* tableName);
 
     virtual QString toQueryString() const override;
+    bool isEmpty() const;
 
 private:
     QString table_;
@@ -123,6 +124,7 @@ protected:
 class SelectQuery : public AbstractExecuteQuery
 {
 public:
+    SelectQuery();
     SelectQuery(AbstractDataBaseInterface* base,
                 ColumnsQuery columns);
     SelectQuery& from(FromQuery table);
@@ -130,6 +132,7 @@ public:
     SelectQuery& prepare();
 
     void bind(const QString &id, const QVariant& value);
+    bool isEmpty() const;
 
     virtual QString toQueryString() const override;
 
@@ -188,12 +191,15 @@ public:
         return *this;
     }
 
+    InsertQuery& from(SelectQuery selectQuery);
+
     virtual QString toQueryString() const override;
 
 private:
     ColumnsQuery columns_;
     QString tableName_;
     QList<QVariantList> values_;
+    SelectQuery selectQuery_;
 };
 
 class CreateTableQuery : public AbstractExecuteQuery

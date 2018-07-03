@@ -53,6 +53,17 @@ QString FromQuery::toQueryString() const
     return QString(" from %1").arg(table_);
 }
 
+bool FromQuery::isEmpty() const
+{
+    return table_.isEmpty();
+}
+
+SelectQuery::SelectQuery()
+    : AbstractExecuteQuery(nullptr)
+{
+
+}
+
 SelectQuery::SelectQuery(AbstractDataBaseInterface *base,
                          ColumnsQuery columns)
     : AbstractExecuteQuery(base),
@@ -82,6 +93,11 @@ SelectQuery &SelectQuery::prepare()
 void SelectQuery::bind(const QString &id, const QVariant &value)
 {
     query_->bindValue(":" + id, value);
+}
+
+bool SelectQuery::isEmpty() const
+{
+    return from_.isEmpty();
 }
 
 QString SelectQuery::toQueryString() const
@@ -316,23 +332,42 @@ InsertQuery &InsertQuery::into(QString tableName)
     return *this;
 }
 
+InsertQuery &InsertQuery::from(SelectQuery selectQuery)
+{
+    selectQuery_ = std::move(selectQuery);
+    return *this;
+}
+
+/// TODO вынести значения из values_ в отдельный класс
 QString InsertQuery::toQueryString() const
 {
-    const QString pattern("insert into %1(%2) values%3;");
-    const QString valuesPattern("(%1)");
+    const QString pattern("insert into %1(%2) %3;");
 
-    QStringList valuesList;
-    foreach (const QVariantList& lst, values_)
+    QString value;
+    if(!values_.isEmpty() && selectQuery_.isEmpty())
     {
-        QStringList values;
-        foreach (const QVariant& var, lst)
+        const QString valuesPattern("(%1)");
+
+        QStringList valuesList;
+        foreach (const QVariantList& lst, values_)
         {
-            values << "'" + var.toString() + "'";
+            QStringList values;
+            foreach (const QVariant& var, lst)
+            {
+                values << "'" + var.toString() + "'";
+            }
+            valuesList << valuesPattern.arg(values.join(", "));
         }
-        valuesList << valuesPattern.arg(values.join(", "));
+
+        value = "values" + valuesList.join(",");
+    }
+    else if(values_.isEmpty() && !selectQuery_.isEmpty())
+    {
+        value = selectQuery_.toQueryString();
+        value = value.mid(0, value.size() - 1);
     }
 
     return pattern.arg(tableName_)
             .arg(columns_.toQueryString())
-            .arg(valuesList.join(","));
+            .arg(value);
 }

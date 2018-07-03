@@ -13,6 +13,8 @@ private slots:
     void TestSimpleInsert();
     void TestSimpleInsertToBase();
     void TestInsertFromSelect();
+    void TestInsertFromSelectOnBase();
+
 };
 
 #endif // TINSERT_H
