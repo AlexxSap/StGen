@@ -20,6 +20,12 @@ namespace StGenGlobal
         return getBuilder()->select(ColumnsQuery(conv(args...)));
     }
 
+    template <typename... Args>
+    InsertQuery insert(Args ... args)
+    {
+        return getBuilder()->insert(ColumnsQuery(conv(args...)));
+    }
+
     QString bind(const QString &id);
     QString distinct(const QString &column);
     QStringList autoincrement();

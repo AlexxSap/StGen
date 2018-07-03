@@ -9,6 +9,7 @@ public:
     AbstractSqlBuilder(AbstractDataBaseInterface* base);
     virtual SelectQuery select(const ColumnsQuery &columns = ColumnsQuery()) = 0;
     virtual CreateTableQuery createTable(QString name) = 0;
+    virtual InsertQuery insert(const ColumnsQuery &columns = ColumnsQuery()) = 0;
 
 
 protected:
@@ -21,6 +22,7 @@ public:
     SqliteQueryBuilder(SqliteInterface *base);
     virtual SelectQuery select(const ColumnsQuery &columns = ColumnsQuery()) override;
     virtual CreateTableQuery createTable(QString name) override;
+    virtual InsertQuery insert(const ColumnsQuery &columns = ColumnsQuery()) override;
 
     template <typename... Args>
     SelectQuery select(Args ... args)

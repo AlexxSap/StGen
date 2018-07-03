@@ -16,6 +16,8 @@ public:
     ColumnsQuery();
     ColumnsQuery(const QStringList &columns);
 
+    int size() const;
+
     virtual QString toQueryString() const override;
 
 private:
@@ -160,6 +162,38 @@ private:
     QString name_;
     QString type_;
     Flags flags_;
+};
+
+class InsertQuery : public AbstractExecuteQuery
+{
+public:
+    InsertQuery(AbstractDataBaseInterface* base,
+                ColumnsQuery columns);
+
+    InsertQuery& into(QString tableName);
+
+    template <typename... Args>
+    InsertQuery& values(Args ... args)
+    {
+        const QVariantList lst(convVar(args...));
+        if(lst.size() == columns_.size())
+        {
+            values_ << std::move(lst);
+        }
+        else
+        {
+            qWarning() << "values size != columns size";
+        }
+
+        return *this;
+    }
+
+    virtual QString toQueryString() const override;
+
+private:
+    ColumnsQuery columns_;
+    QString tableName_;
+    QList<QVariantList> values_;
 };
 
 class CreateTableQuery : public AbstractExecuteQuery

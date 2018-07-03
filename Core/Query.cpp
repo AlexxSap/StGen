@@ -18,6 +18,11 @@ ColumnsQuery::ColumnsQuery(const QStringList &columns)
 {
 }
 
+int ColumnsQuery::size() const
+{
+    return columns_.size();
+}
+
 QString ColumnsQuery::toQueryString() const
 {
     return columns_.isEmpty() ? "*" : columns_.join(", ");
@@ -295,4 +300,39 @@ QString TableColumn::toQueryString() const
             + (flags_.isEmpty()
                ? ""
                : (" " + flags_.join(" ")));
+}
+
+InsertQuery::InsertQuery(AbstractDataBaseInterface *base,
+                         ColumnsQuery columns)
+    : AbstractExecuteQuery(base),
+      columns_(std::move(columns))
+{
+
+}
+
+InsertQuery &InsertQuery::into(QString tableName)
+{
+    tableName_ = tableName;
+    return *this;
+}
+
+QString InsertQuery::toQueryString() const
+{
+    const QString pattern("insert into %1(%2) values%3;");
+    const QString valuesPattern("(%1)");
+
+    QStringList valuesList;
+    foreach (const QVariantList& lst, values_)
+    {
+        QStringList values;
+        foreach (const QVariant& var, lst)
+        {
+            values << "'" + var.toString() + "'";
+        }
+        valuesList << valuesPattern.arg(values.join(", "));
+    }
+
+    return pattern.arg(tableName_)
+            .arg(columns_.toQueryString())
+            .arg(valuesList.join(","));
 }

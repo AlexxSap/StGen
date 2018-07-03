@@ -22,6 +22,11 @@ CreateTableQuery SqliteQueryBuilder::createTable(QString name)
     return CreateTableQuery(base_, std::move(name));
 }
 
+InsertQuery SqliteQueryBuilder::insert(const ColumnsQuery &columns)
+{
+    return InsertQuery(base_, columns);
+}
+
 AbstractSqlBuilder::AbstractSqlBuilder(AbstractDataBaseInterface *base)
     : base_(base)
 {
