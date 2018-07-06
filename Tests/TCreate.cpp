@@ -10,8 +10,7 @@ TCreate::TCreate(QObject *parent) : QObject(parent)
 
 void TCreate::TestSimpleCreateTable()
 {
-    StGenGlobal::setBuilder(StGen::createSqlBuilder(nullptr));
-    using namespace StGenGlobal;
+    DEFAULT_NULL_CONNECTION();
 
     {
         const QString query = createTable("table1")
@@ -36,12 +35,7 @@ void TCreate::TestSimpleCreateTable()
 
 void TCreate::TestSimpleCreateTableOnBase()
 {
-    const QString dataBaseName("TestSimpleCreateTableOnBase.db");
-    SqliteInterface b(DataBaseSettings(dataBaseName), false);
-    TestBase base(&b);
-
-    StGenGlobal::setBuilder(StGen::createSqlBuilder(&b));
-    using namespace StGenGlobal;
+    DEFAULT_SQLITE_BASE("TestSimpleCreateTableOnBase.db");
 
     createTable("table1")
             .addColumn("id", ColumnType::Integer())
@@ -72,8 +66,7 @@ void TCreate::TestSimpleCreateTableOnBase()
 
 void TCreate::TestPrimaryKey()
 {
-    StGenGlobal::setBuilder(StGen::createSqlBuilder(nullptr));
-    using namespace StGenGlobal;
+    DEFAULT_NULL_CONNECTION();
 
     {
         const QString query = createTable("table1")
@@ -91,8 +84,7 @@ void TCreate::TestPrimaryKey()
 
 void TCreate::TestFlags()
 {
-    StGenGlobal::setBuilder(StGen::createSqlBuilder(nullptr));
-    using namespace StGenGlobal;
+    DEFAULT_NULL_CONNECTION();
 
     {
         const QString query = createTable("table1")

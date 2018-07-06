@@ -132,9 +132,7 @@ void TSelect::TestSimpleWhereWithBind()
 
 void TSelect::TestSimpleWhereWithBindFromBase()
 {
-    const QString dataBaseName("TestSimpleWhereWithBindFromBase.db");
-    SqliteInterface b(DataBaseSettings(dataBaseName), false);
-    TestBase base(&b);
+    DEFAULT_SQLITE_BASE("TestSimpleWhereWithBindFromBase.db");
 
     {
         SqlQuery query = base->query();
@@ -144,9 +142,6 @@ void TSelect::TestSimpleWhereWithBindFromBase()
         query->exec("insert into table1 values(3, 'value3');");
         query->exec("insert into table1 values(4, 'value4');");
     }
-
-    StGenGlobal::setBuilder(StGen::createSqlBuilder(&b));
-    using namespace StGenGlobal;
 
     {
         SelectQuery query = select("value").from("table1").where(equal("id", bind("id"))).prepare();
