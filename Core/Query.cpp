@@ -90,9 +90,11 @@ SelectQuery &SelectQuery::prepare()
     return *this;
 }
 
-void SelectQuery::bind(const QString &id, const QVariant &value)
+SelectQuery&  SelectQuery::bind(const QString &id, const QVariant &value)
 {
     query_->bindValue(":" + id, value);
+
+    return *this;
 }
 
 bool SelectQuery::isEmpty() const
@@ -130,6 +132,7 @@ QueryResult AbstractExecuteQuery::exec()
     {
         qWarning() << query_->lastError();
     }
+    qInfo() << "exec" << query_->lastQuery();
     return QueryResult(query_);
 }
 
@@ -145,6 +148,8 @@ void AbstractExecuteQuery::prepare()
     {
         qWarning() << query_->lastError();
     }
+
+    qInfo() << query_->lastQuery();
 }
 
 WhereCase::WhereCase()
@@ -362,6 +367,19 @@ QString InsertQuery::toQueryString() const
             .arg(value);
 }
 
+InsertQuery &InsertQuery::prepare()
+{
+    AbstractExecuteQuery::prepare();
+    return *this;
+}
+
+InsertQuery &InsertQuery::bind(const QString &id,
+                               const QVariant &value)
+{
+    query_->bindValue(":" + id, value);
+    return *this;
+}
+
 Values &Values::operator <<(QVariantList values)
 {
     values_ << std::move(values);
@@ -376,7 +394,16 @@ QString Values::toQueryString() const
         QStringList values;
         foreach (const QVariant& var, lst)
         {
-            values << "'" + var.toString() + "'";
+            const QString strVar(var.toString());
+            if(var.type() == QVariant::String
+                    && strVar.startsWith(":"))
+            {
+                values << strVar;
+            }
+            else
+            {
+                values << "'" + strVar + "'";
+            }
         }
         valuesList << "(" + values.join(", ") + ")";
     }

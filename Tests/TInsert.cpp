@@ -10,8 +10,7 @@ TInsert::TInsert(QObject *parent) : QObject(parent)
 
 void TInsert::TestSimpleInsert()
 {
-    StGenGlobal::setBuilder(StGen::createSqlBuilder(nullptr));
-    using namespace StGenGlobal;
+    DEFAULT_NULL_CONNECTION();
 
     {
         const QString query = insert("col1", "col2")
@@ -50,13 +49,8 @@ void TInsert::TestSimpleInsert()
 }
 
 void TInsert::TestSimpleInsertToBase()
-{
-    const QString dataBaseName("TestSimpleInsertToBase.db");
-    SqliteInterface b(DataBaseSettings(dataBaseName), false);
-    TestBase base(&b);
-
-    StGenGlobal::setBuilder(StGen::createSqlBuilder(&b));
-    using namespace StGenGlobal;
+{   
+    DEFAULT_SQLITE_BASE("TestSimpleInsertToBase.db");
 
     createTable("table1")
             .addColumn("id", ColumnType::Integer())
@@ -86,8 +80,7 @@ void TInsert::TestSimpleInsertToBase()
 
 void TInsert::TestInsertFromSelect()
 {
-    StGenGlobal::setBuilder(StGen::createSqlBuilder(nullptr));
-    using namespace StGenGlobal;
+    DEFAULT_NULL_CONNECTION();
 
     {
         const QString query = insert("col1", "col2")
@@ -102,12 +95,7 @@ void TInsert::TestInsertFromSelect()
 
 void TInsert::TestInsertFromSelectOnBase()
 {
-    const QString dataBaseName("TestInsertFromSelectOnBase.db");
-    SqliteInterface b(DataBaseSettings(dataBaseName), false);
-    TestBase base(&b);
-
-    StGenGlobal::setBuilder(StGen::createSqlBuilder(&b));
-    using namespace StGenGlobal;
+    DEFAULT_SQLITE_BASE("TestInsertFromSelectOnBase.db");
 
     QHash<int, QString> expected;
     {
@@ -150,4 +138,74 @@ void TInsert::TestInsertFromSelectOnBase()
         QCOMPARE(actual, expected);
     }
 
+}
+
+void TInsert::TestInsertWithBind()
+{
+    DEFAULT_SQLITE_BASE("TestInsertWithBind.db");
+
+    QHash<int, QString> expected;
+    expected.insert(1, "aaaaa");
+    expected.insert(2, "bbbbb");
+    expected.insert(3, "ccccc");
+    {
+        createTable("table1")
+                .addColumn("id", ColumnType::Integer())
+                .addColumn("value", ColumnType::String(5))
+                .exec();
+
+        InsertQuery query = insert("id", "value")
+                .into("table1")
+                .values(bind("id"), bind("value"))
+                .prepare();
+
+        for(auto iter = expected.constBegin(); iter != expected.constEnd(); ++iter)
+        {
+            query.bind("id", iter.key()).bind("value", iter.value()).exec();
+        }
+    }
+
+    {
+        const QueryResult result =  select("id", "value").from("table1").exec();
+        QHash<int, QString> actual;
+        while(result.next())
+        {
+            actual.insert(result.value("id").toInt(), result.value("value").toString());
+        }
+        QCOMPARE(actual, expected);
+    }
+}
+
+void TInsert::TestInsertWithHalfBind()
+{
+    DEFAULT_SQLITE_BASE("TestInsertWithHalfBind.db");
+
+    const QSet<int> expected{1,2,3,4};
+    {
+        createTable("table1")
+                .addColumn("id", ColumnType::Integer())
+                .addColumn("value", ColumnType::String(5))
+                .exec();
+
+        InsertQuery query = insert("id", "value")
+                .into("table1")
+                .values(bind("id"), "aaaaa")
+                .prepare();
+
+        foreach (const int &val, expected)
+        {
+            query.bind("id", val).exec();
+        }
+    }
+
+    {
+        const QueryResult result =  select("id", "value").from("table1").exec();
+        QHash<int, QString> actual;
+        while(result.next())
+        {
+            actual.insert(result.value("id").toInt(), result.value("value").toString());
+        }
+        QCOMPARE(actual.keys().toSet(), expected);
+        QCOMPARE(actual.values().toSet(), QSet<QString>{"aaaaa"});
+    }
 }

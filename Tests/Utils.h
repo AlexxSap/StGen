@@ -16,5 +16,13 @@ public:
     DataBaseInterface* operator ->();
 };
 
+#define DEFAULT_SQLITE_BASE(name) const QString dataBaseName(name); \
+    SqliteInterface b(DataBaseSettings(dataBaseName), false); \
+    TestBase base(&b); \
+    StGenGlobal::setBuilder(StGen::createSqlBuilder(&b)); \
+    using namespace StGenGlobal;
+
+#define DEFAULT_NULL_CONNECTION() StGenGlobal::setBuilder(StGen::createSqlBuilder(nullptr)); \
+    using namespace StGenGlobal;
 
 #endif // UTILS_H

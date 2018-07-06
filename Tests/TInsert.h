@@ -14,7 +14,8 @@ private slots:
     void TestSimpleInsertToBase();
     void TestInsertFromSelect();
     void TestInsertFromSelectOnBase();
-
+    void TestInsertWithBind();
+    void TestInsertWithHalfBind();
 };
 
 #endif // TINSERT_H

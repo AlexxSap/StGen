@@ -131,7 +131,8 @@ public:
     SelectQuery& where(WhereCase whereCond);
     SelectQuery& prepare();
 
-    void bind(const QString &id, const QVariant& value);
+    SelectQuery& bind(const QString &id,
+                      const QVariant& value);
     bool isEmpty() const;
 
     virtual QString toQueryString() const override;
@@ -205,6 +206,11 @@ public:
     InsertQuery& values(Values values);
     InsertQuery& from(SelectQuery selectQuery);
     virtual QString toQueryString() const override;
+
+    InsertQuery& prepare();
+
+    InsertQuery& bind(const QString &id,
+                      const QVariant& value);
 
 private:
     ColumnsQuery columns_;
