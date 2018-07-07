@@ -15,6 +15,7 @@ private:
 private slots:
     void TestSimpleSelect();
     void TestSimpleSelectColumns();
+    void TestSimpleSelectColumnsWithAliases();
     void TestSimpleSelectFromBase();
     void TestSimpleWhere();
     void TestSimpleWhereWithBind();

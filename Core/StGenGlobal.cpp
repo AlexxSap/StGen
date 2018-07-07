@@ -66,3 +66,12 @@ QStringList StGenGlobal::defaultValue(const QString &value)
 {
     return QStringList() << QString("default '%1'").arg(value);
 }
+
+QString StGenGlobal::alias(const QString &name, const QString &newName)
+{
+    if(name.isEmpty() || newName.isEmpty())
+    {
+        return name;
+    }
+    return name + " as " + newName;
+}

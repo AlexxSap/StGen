@@ -41,6 +41,16 @@ void TSelect::TestSimpleSelectColumns()
     }
 }
 
+void TSelect::TestSimpleSelectColumnsWithAliases()
+{
+     using namespace StGenGlobal;
+    {
+        const QString query = select(alias("col1", "id"), alias("col2", "value")).from("tableName").toQueryString();
+        const QString expected("select col1 as id, col2 as value from tableName;");
+        QCOMPARE(query, expected);
+    }
+}
+
 void TSelect::TestSimpleSelectFromBase()
 {
     const QString dataBaseName("TestSimpleSelectFromBase.db");
