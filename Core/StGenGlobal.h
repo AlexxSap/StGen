@@ -54,6 +54,9 @@ namespace StGenGlobal
     SimpleTypeOperation(more)
     SimpleTypeOperation(moreEqual)
 
+    AbsExprPointer in(QString name, QVariantList values);
+    AbsExprPointer notIn(QString name, QVariantList values);
+
     AbsExprPointer andE(AbsExprPointer a, AbsExprPointer b);
 
     AbsExprPointer orE(AbsExprPointer a, AbsExprPointer b);

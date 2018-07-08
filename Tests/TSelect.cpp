@@ -26,7 +26,7 @@ void TSelect::TestSimpleSelect()
 
 void TSelect::TestSimpleSelectColumns()
 {
-    using namespace StGenGlobal;
+    DEFAULT_NULL_CONNECTION();
 
     {
         const QString query = select("col1", "col2").from("tableName").toQueryString();
@@ -43,7 +43,7 @@ void TSelect::TestSimpleSelectColumns()
 
 void TSelect::TestSimpleSelectColumnsWithAliases()
 {
-     using namespace StGenGlobal;
+     DEFAULT_NULL_CONNECTION();
     {
         const QString query = select(alias("col1", "id"), alias("col2", "value")).from("tableName").toQueryString();
         const QString expected("select col1 as id, col2 as value from tableName;");
@@ -83,7 +83,7 @@ void TSelect::TestSimpleSelectFromBase()
 
 void TSelect::TestSimpleWhere()
 {
-    using namespace StGenGlobal;
+    DEFAULT_NULL_CONNECTION();
 
     {
         const QString query = select().from("tableName").where(equal("id", 35)).toQueryString();
@@ -129,9 +129,24 @@ void TSelect::TestSimpleWhere()
 
 }
 
+void TSelect::TestWhereIn()
+{
+    DEFAULT_NULL_CONNECTION();
+    {
+        const QString query = select().from("tableName").where(in("id", {1,2,3})).toQueryString();
+        const QString expected("select * from tableName where id in [1, 2, 3];");
+        QCOMPARE(query, expected);
+    }
+    {
+    const QString query = select().from("tableName").where(notIn("id", {1,2,3})).toQueryString();
+    const QString expected("select * from tableName where id not in [1, 2, 3];");
+    QCOMPARE(query, expected);
+    }
+}
+
 void TSelect::TestSimpleWhereWithBind()
 {
-    using namespace StGenGlobal;
+    DEFAULT_NULL_CONNECTION();
 
     {
         const QString query = select().from("tableName").where(equal("id", bind("id"))).toQueryString();
@@ -185,7 +200,7 @@ void TSelect::TestSimpleWhereWithBindFromBase()
 
 void TSelect::TestComplexWhere()
 {
-    using namespace StGenGlobal;
+    DEFAULT_NULL_CONNECTION();
 
     {
         const QString query = select().from("tableName").where(andE(less("id", 35), notEqual("id", 7))).toQueryString();
@@ -203,7 +218,7 @@ void TSelect::TestComplexWhere()
 
 void TSelect::TestDistinct()
 {
-    using namespace StGenGlobal;
+    DEFAULT_NULL_CONNECTION();
 
     {
         const QString query = select(distinct("col1"), "col2").from("tableName").toQueryString();

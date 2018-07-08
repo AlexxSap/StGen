@@ -82,3 +82,18 @@ QString StGenGlobal::column(const QString &table,
 {
     return table + "." + column + (newName.isEmpty() ? "" : " as " + newName);
 }
+
+AbsExprPointer StGenGlobal::in(QString name,
+                               QVariantList values)
+{
+    return InExprPointer::create(std::move(name),
+                                 std::move(values),
+                                 false);
+}
+
+AbsExprPointer StGenGlobal::notIn(QString name, QVariantList values)
+{
+    return InExprPointer::create(std::move(name),
+                                 std::move(values),
+                                 true);
+}

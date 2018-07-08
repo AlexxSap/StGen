@@ -52,7 +52,8 @@ public:
         more,
         moreEqual,
         andE,
-        orE
+        orE,
+        in
     };
 
 protected:
@@ -93,6 +94,24 @@ private:
 };
 
 using ExprPointer = QSharedPointer<Expression>;
+
+class InExpression : public AbstractExpression
+{
+public:
+    InExpression(QString name,
+                 QVariantList values,
+                 bool isNot = false);
+
+    virtual QString toQueryString() const override;
+    virtual bool isEmpty() const override;
+
+private:
+    QString name_;
+    QStringList values_;
+    bool isNot_ = false;
+};
+
+using InExprPointer = QSharedPointer<InExpression>;
 
 class CommonCase : public AbstractQuery
 {

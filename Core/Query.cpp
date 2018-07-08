@@ -230,6 +230,7 @@ QString AbstractExpression::operationToString(const Operation& type) const
     case Operation::moreEqual: return " >= ";
     case Operation::andE: return " and ";
     case Operation::orE: return " or ";
+    case Operation::in: return " in ";
 
     }
 
@@ -515,4 +516,25 @@ OnCase::OnCase(AbsExprPointer expr)
 QString OnCase::toQueryString() const
 {
     return " on " + CommonCase::toQueryString();
+}
+
+InExpression::InExpression(QString name, QVariantList values, bool isNot)
+    : AbstractExpression(),
+      name_(name),
+      isNot_(isNot)
+{
+    foreach (const QVariant &value, values)
+    {
+        values_ << std::move(value.toString());
+    }
+}
+
+QString InExpression::toQueryString() const
+{
+    return name_ + (isNot_ ? " not" : "") + " in [" + values_.join(", ") + "]";
+}
+
+bool InExpression::isEmpty() const
+{
+    return values_.isEmpty();
 }

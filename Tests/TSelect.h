@@ -18,6 +18,7 @@ private slots:
     void TestSimpleSelectColumnsWithAliases();
     void TestSimpleSelectFromBase();
     void TestSimpleWhere();
+    void TestWhereIn();
     void TestSimpleWhereWithBind();
     void TestSimpleWhereWithBindFromBase();
     void TestComplexWhere();
