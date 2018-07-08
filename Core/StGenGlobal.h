@@ -27,7 +27,11 @@ namespace StGenGlobal
     }
 
     QString bind(const QString &id);
-    QString alias(const QString &name, const QString& newName);
+    QString alias(const QString &name,
+                  const QString& newName);
+    QString column(const QString &table,
+                   const QString& column,
+                   const QString& newName = QString());
     QString distinct(const QString &column);
     QStringList autoincrement();
     QStringList unique();

@@ -108,12 +108,23 @@ QString SelectQuery::toQueryString() const
             + columns_.toQueryString()
             + from_.toQueryString();
 
+    if(!joinQuery_.isEmpty())
+    {
+        result += joinQuery_.toQueryString();
+    }
+
     if(!whereExpr_.isEmpty())
     {
         result += whereExpr_.toQueryString();
     }
 
-    return result+ ";";
+    return result + ";";
+}
+
+JoinQuery &SelectQuery::innerJoin(QString tableName)
+{
+    joinQuery_.set(JoinQuery::Inner, tableName, this);
+    return std::ref(joinQuery_);
 }
 
 AbstractExecuteQuery::AbstractExecuteQuery(AbstractDataBaseInterface *base)
@@ -152,30 +163,13 @@ void AbstractExecuteQuery::prepare()
     qInfo() << query_->lastQuery();
 }
 
-WhereCase::WhereCase()
-{
 
-}
 
-WhereCase::WhereCase(AbsExprPointer expr)
-    : expr_(expr)
-{
 
-}
 
-QString WhereCase::toQueryString() const
-{
-    if(expr_.isNull())
-    {
-        return QString();
-    }
-    return " where " + expr_->toQueryString();
-}
 
-bool WhereCase::isEmpty() const
-{
-    return expr_.isNull() || expr_->isEmpty();
-}
+
+
 
 ValueExpression::ValueExpression(QVariant value)
     : value_(std::move(value))
@@ -414,4 +408,109 @@ QString Values::toQueryString() const
 bool Values::isEmpty() const
 {
     return values_.isEmpty();
+}
+
+CommonCase::CommonCase()
+{
+
+}
+
+CommonCase::CommonCase(AbsExprPointer expr)
+    : expr_(expr)
+{
+
+}
+
+QString CommonCase::toQueryString() const
+{
+    return expr_.isNull() ? QString() : expr_->toQueryString();
+}
+
+bool CommonCase::isEmpty() const
+{
+    return expr_.isNull() || expr_->isEmpty();
+}
+
+WhereCase::WhereCase()
+    : CommonCase()
+{
+
+}
+
+WhereCase::WhereCase(AbsExprPointer expr)
+    : CommonCase(expr)
+{
+
+}
+
+QString WhereCase::toQueryString() const
+{
+    return " where " + CommonCase::toQueryString();
+}
+
+JoinQuery::JoinQuery()
+{
+
+}
+
+JoinQuery::JoinQuery(JoinQuery::Type type,
+                     QString table,
+                     SelectQuery *selectQuery)
+    : type_(std::move(type)), table_(std::move(table)), selectQuery_(selectQuery)
+{
+
+}
+
+SelectQuery &JoinQuery::on(OnCase expr)
+{
+    case_ = expr;
+    return *selectQuery_;
+}
+
+void JoinQuery::set(JoinQuery::Type type,
+                    QString table,
+                    SelectQuery *selectQuery)
+{
+  type_ = std::move(type);
+  table_ = std::move(table);
+  selectQuery_ = selectQuery;
+}
+
+bool JoinQuery::isEmpty() const
+{
+    return table_.isEmpty();
+}
+
+QString JoinQuery::toQueryString() const
+{
+    return QString(" %1 join %2%3")
+            .arg(typeToStr())
+            .arg(table_)
+            .arg(case_.toQueryString());
+}
+
+QString JoinQuery::typeToStr() const
+{
+    switch (type_) {
+    case Inner: return "inner";
+    }
+
+    return QString();
+}
+
+OnCase::OnCase()
+: CommonCase()
+{
+
+}
+
+OnCase::OnCase(AbsExprPointer expr)
+: CommonCase(expr)
+{
+
+}
+
+QString OnCase::toQueryString() const
+{
+    return " on " + CommonCase::toQueryString();
 }

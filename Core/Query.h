@@ -94,16 +94,32 @@ private:
 
 using ExprPointer = QSharedPointer<Expression>;
 
-class WhereCase : public AbstractQuery
+class CommonCase : public AbstractQuery
 {
 public:
-    WhereCase();
-    WhereCase(AbsExprPointer expr);
+    CommonCase();
+    CommonCase(AbsExprPointer expr);
     virtual QString toQueryString() const override;
     bool isEmpty() const;
 
 private:
     AbsExprPointer expr_;
+};
+
+class WhereCase : public CommonCase
+{
+public:
+    WhereCase();
+    WhereCase(AbsExprPointer expr);
+    virtual QString toQueryString() const override;
+};
+
+class OnCase : public CommonCase
+{
+public:
+    OnCase();
+    OnCase(AbsExprPointer expr);
+    virtual QString toQueryString() const override;
 };
 
 class AbstractExecuteQuery : public AbstractQuery
@@ -119,6 +135,39 @@ protected:
 protected:
     AbstractDataBaseInterface* base_;
     SqlQuery query_;
+};
+
+class SelectQuery;
+class JoinQuery : public AbstractQuery
+{
+public:
+    enum Type
+    {
+        Inner
+    };
+
+    JoinQuery();
+    JoinQuery(Type type,
+              QString table,
+              SelectQuery *selectQuery);
+    SelectQuery& on(OnCase expr);
+
+    void set(Type type,
+             QString table,
+             SelectQuery *selectQuery);
+
+    bool isEmpty() const;
+
+    virtual QString toQueryString() const override;
+
+private:
+    QString typeToStr() const;
+
+private:
+    Type type_ = Inner;
+    QString table_;
+    SelectQuery *selectQuery_ = nullptr;
+    OnCase case_;
 };
 
 class SelectQuery : public AbstractExecuteQuery
@@ -137,10 +186,13 @@ public:
 
     virtual QString toQueryString() const override;
 
+    JoinQuery& innerJoin(QString tableName);
+
 private:
     ColumnsQuery columns_;
     FromQuery from_;
     WhereCase whereExpr_;
+    JoinQuery joinQuery_;
 };
 
 class ColumnType

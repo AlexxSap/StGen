@@ -6,6 +6,7 @@
 #include "TBase.h"
 #include "TCreate.h"
 #include "TInsert.h"
+#include "TJoin.h"
 
 #include <QDebug>
 
@@ -28,6 +29,7 @@ int main(int argc, char *argv[])
     tests += runTest<TBase>();
     tests += runTest<TCreate>();
     tests += runTest<TInsert>();
+    tests += runTest<TJoin>();
 
     return tests;
 }

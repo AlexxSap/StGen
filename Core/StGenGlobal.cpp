@@ -75,3 +75,10 @@ QString StGenGlobal::alias(const QString &name, const QString &newName)
     }
     return name + " as " + newName;
 }
+
+QString StGenGlobal::column(const QString &table,
+                            const QString &column,
+                            const QString &newName)
+{
+    return table + "." + column + (newName.isEmpty() ? "" : " as " + newName);
+}
