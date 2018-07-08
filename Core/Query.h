@@ -143,7 +143,9 @@ class JoinQuery : public AbstractQuery
 public:
     enum Type
     {
-        Inner
+        Inner,
+        Left,
+        Right
     };
 
     JoinQuery();

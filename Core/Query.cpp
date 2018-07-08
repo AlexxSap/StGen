@@ -493,6 +493,8 @@ QString JoinQuery::typeToStr() const
 {
     switch (type_) {
     case Inner: return "inner";
+    case Left: return "left";
+    case Right: return "right";
     }
 
     return QString();
