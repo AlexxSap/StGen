@@ -138,10 +138,52 @@ void TSelect::TestWhereIn()
         QCOMPARE(query, expected);
     }
     {
-    const QString query = select().from("tableName").where(notIn("id", {1,2,3})).toQueryString();
-    const QString expected("select * from tableName where id not in [1, 2, 3];");
-    QCOMPARE(query, expected);
+        const QString query = select().from("tableName").where(notIn("id", {1,2,3})).toQueryString();
+        const QString expected("select * from tableName where id not in [1, 2, 3];");
+        QCOMPARE(query, expected);
     }
+}
+
+void TSelect::TestWhereInFromBase()
+{
+    DEFAULT_SQLITE_BASE("TestWhereInFromBase.db");
+
+    createTable("table1")
+            .addColumn("id", ColumnType::Integer())
+            .addColumn("value", ColumnType::String(5))
+            .exec();
+
+    insert("id", "value").into("table1")
+            .values(1, "aaaaa")
+            .values(2, "bbbbb")
+            .values(3, "ccccc")
+            .values(4, "aaaaa").exec();
+
+    {
+        const QueryResult result = select("value")
+                .from("table1")
+                .where(in("id", {1, 4}))
+                .exec();
+
+        while(result.next())
+        {
+            QCOMPARE(result.value("value").toString(), "aaaaa");
+        }
+    }
+
+    {
+        const QueryResult result = select("value")
+                .from("table1")
+                .where(notIn("id", {2, 3}))
+                .exec();
+
+        while(result.next())
+        {
+            QCOMPARE(result.value("value").toString(), "aaaaa");
+        }
+    }
+
+
 }
 
 void TSelect::TestSimpleWhereWithBind()

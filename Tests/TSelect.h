@@ -19,6 +19,7 @@ private slots:
     void TestSimpleSelectFromBase();
     void TestSimpleWhere();
     void TestWhereIn();
+    void TestWhereInFromBase();
     void TestSimpleWhereWithBind();
     void TestSimpleWhereWithBindFromBase();
     void TestComplexWhere();
