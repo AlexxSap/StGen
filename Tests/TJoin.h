@@ -11,6 +11,7 @@ public:
 
 private slots:
     void TestSimpleInnerJoin();
+    void TestSimpleInnerJoinFromBase();
 };
 
 #endif // TJOIN_H

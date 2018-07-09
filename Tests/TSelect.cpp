@@ -182,8 +182,6 @@ void TSelect::TestWhereInFromBase()
             QCOMPARE(result.value("value").toString(), "aaaaa");
         }
     }
-
-
 }
 
 void TSelect::TestSimpleWhereWithBind()
