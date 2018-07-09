@@ -36,6 +36,7 @@ namespace StGenGlobal
     QStringList autoincrement();
     QStringList unique();
     QStringList notNull();
+    QString count(const QString &column);
 
     enum class Default
     {
@@ -56,9 +57,7 @@ namespace StGenGlobal
 
     AbsExprPointer in(QString name, QVariantList values);
     AbsExprPointer notIn(QString name, QVariantList values);
-
     AbsExprPointer andE(AbsExprPointer a, AbsExprPointer b);
-
     AbsExprPointer orE(AbsExprPointer a, AbsExprPointer b);
 }
 

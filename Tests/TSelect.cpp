@@ -267,4 +267,51 @@ void TSelect::TestDistinct()
     }
 }
 
+void TSelect::TestOrderBy()
+{
+    DEFAULT_NULL_CONNECTION();
+
+    {
+        const QString query = select("col1", "col2").from("tableName").orderBy("col1").toQueryString();
+        const QString expected("select col1, col2 from tableName order by col1;");
+        QCOMPARE(query, expected);
+    }
+
+    {
+        const QString query = select("col1", "col2").from("tableName").orderBy({"col1", "col2"}, Order::Asc).toQueryString();
+        const QString expected("select col1, col2 from tableName order by col1, col2 asc;");
+        QCOMPARE(query, expected);
+    }
+
+    {
+        const QString query = select("col1", "col2").from("tableName").orderBy(count("col1"), Order::Desc).toQueryString();
+        const QString expected("select col1, col2 from tableName order by count(col1) desc;");
+        QCOMPARE(query, expected);
+    }
+}
+
+void TSelect::TestGroupBy()
+{
+    DEFAULT_NULL_CONNECTION();
+
+    {
+        const QString query = select("col1", "col2").from("tableName").groupBy("col1").toQueryString();
+        const QString expected("select col1, col2 from tableName group by col1;");
+        QCOMPARE(query, expected);
+    }
+}
+
+void TSelect::TestHaving()
+{
+    DEFAULT_NULL_CONNECTION();
+
+    {
+        const QString query = select("col1", "col2").from("tableName")
+                .groupBy("col1")
+                .having(more(count("col1"), 15)).toQueryString();
+        const QString expected("select col1, col2 from tableName group by col1 having count(col1) > 15;");
+        QCOMPARE(query, expected);
+    }
+}
+
 

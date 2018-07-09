@@ -97,3 +97,8 @@ AbsExprPointer StGenGlobal::notIn(QString name, QVariantList values)
                                  std::move(values),
                                  true);
 }
+
+QString StGenGlobal::count(const QString &column)
+{
+    return QString("count(%1)").arg(column);
+}

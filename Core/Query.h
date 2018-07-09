@@ -133,6 +133,14 @@ public:
     virtual QString toQueryString() const override;
 };
 
+class HavingCase : public CommonCase
+{
+public:
+    HavingCase();
+    HavingCase(AbsExprPointer expr);
+    virtual QString toQueryString() const override;
+};
+
 class OnCase : public CommonCase
 {
 public:
@@ -191,6 +199,70 @@ private:
     OnCase case_;
 };
 
+class Group : public AbstractQuery
+{
+public:
+    void set(QStringList columns)
+    {
+        columns_ = std::move(columns);
+    }
+
+    virtual QString toQueryString() const
+    {
+        if(columns_.isEmpty())
+        {
+            return QString();
+        }
+
+        return " group by " + columns_.join(", ");
+    }
+
+private:
+    QStringList columns_;
+
+};
+
+class Order : public AbstractQuery
+{
+public:
+    enum Type
+    {
+        None,
+        Asc,
+        Desc
+    };
+
+    Order() : AbstractQuery() {}
+
+    void set(QStringList columns,
+             Type t)
+    {
+        columns_ = std::move(columns);
+        type_ = std::move(t);
+    }
+
+    virtual QString toQueryString() const
+    {
+        if(columns_.isEmpty())
+        {
+            return QString();
+        }
+
+        QString type;
+        switch (type_) {
+        case None: type = ""; break;
+        case Asc: type = " asc"; break;
+        case Desc: type = " desc"; break;
+        }
+
+        return " order by " + columns_.join(", ") + type;
+    }
+
+private:
+    QStringList columns_;
+    Type type_;
+};
+
 class SelectQuery : public AbstractExecuteQuery
 {
 public:
@@ -199,7 +271,14 @@ public:
                 ColumnsQuery columns);
     SelectQuery& from(FromQuery table);
     SelectQuery& where(WhereCase whereCond);
+    SelectQuery& having(HavingCase havingCond);
     SelectQuery& prepare();
+
+    SelectQuery& orderBy(QStringList columns, Order::Type type = Order::None);
+    SelectQuery& orderBy(QString column, Order::Type type = Order::None);
+
+    SelectQuery& groupBy(QStringList columns);
+    SelectQuery& groupBy(QString column);
 
     SelectQuery& bind(const QString &id,
                       const QVariant& value);
@@ -214,6 +293,9 @@ private:
     FromQuery from_;
     WhereCase whereExpr_;
     JoinQuery joinQuery_;
+    Group group_;
+    Order order_;
+    HavingCase havingExpr_;
 };
 
 class ColumnType

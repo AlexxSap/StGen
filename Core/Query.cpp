@@ -84,9 +84,39 @@ SelectQuery &SelectQuery::where(WhereCase whereCond)
     return *this;
 }
 
+SelectQuery &SelectQuery::having(HavingCase havingCond)
+{
+    havingExpr_ = std::move(havingCond);
+    return *this;
+}
+
 SelectQuery &SelectQuery::prepare()
 {
     AbstractExecuteQuery::prepare();
+    return *this;
+}
+
+SelectQuery &SelectQuery::orderBy(QStringList columns, Order::Type type)
+{
+    order_.set(std::move(columns), std::move(type));
+    return *this;
+}
+
+SelectQuery &SelectQuery::orderBy(QString column, Order::Type type)
+{
+    order_.set(QStringList() << std::move(column), std::move(type));
+    return *this;
+}
+
+SelectQuery &SelectQuery::groupBy(QStringList columns)
+{
+    group_.set(std::move(columns));
+    return *this;
+}
+
+SelectQuery &SelectQuery::groupBy(QString column)
+{
+    group_.set(QStringList() << std::move(column));
     return *this;
 }
 
@@ -108,15 +138,11 @@ QString SelectQuery::toQueryString() const
             + columns_.toQueryString()
             + from_.toQueryString();
 
-    if(!joinQuery_.isEmpty())
-    {
-        result += joinQuery_.toQueryString();
-    }
-
-    if(!whereExpr_.isEmpty())
-    {
-        result += whereExpr_.toQueryString();
-    }
+    result += joinQuery_.toQueryString();
+    result += whereExpr_.toQueryString();
+    result += group_.toQueryString();
+    result += order_.toQueryString();
+    result += havingExpr_.toQueryString();
 
     return result + ";";
 }
@@ -446,6 +472,7 @@ WhereCase::WhereCase(AbsExprPointer expr)
 
 QString WhereCase::toQueryString() const
 {
+    if(isEmpty()) return QString();
     return " where " + CommonCase::toQueryString();
 }
 
@@ -484,6 +511,8 @@ bool JoinQuery::isEmpty() const
 
 QString JoinQuery::toQueryString() const
 {
+    if(isEmpty()) return QString();
+
     return QString(" %1 join %2%3")
             .arg(typeToStr())
             .arg(table_)
@@ -537,4 +566,22 @@ QString InExpression::toQueryString() const
 bool InExpression::isEmpty() const
 {
     return values_.isEmpty();
+}
+
+HavingCase::HavingCase()
+    : CommonCase()
+{
+
+}
+
+HavingCase::HavingCase(AbsExprPointer expr)
+    : CommonCase(expr)
+{
+
+}
+
+QString HavingCase::toQueryString() const
+{
+    if(isEmpty()) return QString();
+    return " having " + CommonCase::toQueryString();
 }
