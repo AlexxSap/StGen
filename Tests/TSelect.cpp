@@ -284,8 +284,8 @@ void TSelect::TestOrderBy()
     }
 
     {
-        const QString query = select("col1", "col2").from("tableName").orderBy(count("col1"), Order::Desc).toQueryString();
-        const QString expected("select col1, col2 from tableName order by count(col1) desc;");
+        const QString query = select("col1", "col2").from("tableName").orderBy(count("col1", Sensitive::All), Order::Desc).toQueryString();
+        const QString expected("select col1, col2 from tableName order by count(all col1) desc;");
         QCOMPARE(query, expected);
     }
 }
@@ -310,6 +310,35 @@ void TSelect::TestHaving()
                 .groupBy("col1")
                 .having(more(count("col1"), 15)).toQueryString();
         const QString expected("select col1, col2 from tableName group by col1 having count(col1) > 15;");
+        QCOMPARE(query, expected);
+    }
+}
+
+void TSelect::TestMinMax()
+{
+    DEFAULT_NULL_CONNECTION();
+
+    {
+        const QString query = select(max("col1"), "col2")
+                .from("tableName")
+                .toQueryString();
+        const QString expected("select max(col1), col2 from tableName;");
+        QCOMPARE(query, expected);
+    }
+
+    {
+        const QString query = select(min("col1", Sensitive::Distinct), "col2")
+                .from("tableName")
+                .toQueryString();
+        const QString expected("select min(distinct col1), col2 from tableName;");
+        QCOMPARE(query, expected);
+    }
+
+    {
+        const QString query = select(max(sum("col1", 15, "col3")), "col2")
+                .from("tableName")
+                .toQueryString();
+        const QString expected("select max(col1 + 15 + col3), col2 from tableName;");
         QCOMPARE(query, expected);
     }
 }

@@ -26,6 +26,13 @@ namespace StGenGlobal
         return getBuilder()->insert(ColumnsQuery(conv(args...)));
     }
 
+    template <typename... Args>
+    QString sum(Args ... args)
+    {
+        return convVar(args...).toStringList().join(" + ");
+    }
+
+
     QString bind(const QString &id);
     QString alias(const QString &name,
                   const QString& newName);
@@ -36,7 +43,27 @@ namespace StGenGlobal
     QStringList autoincrement();
     QStringList unique();
     QStringList notNull();
-    QString count(const QString &column);
+
+    class Sensitive
+    {
+    public:
+        enum Type
+        {
+            NotSet,
+            All,
+            Distinct
+        };
+
+        static QString typeToString(const Type& t);
+    };
+
+    QString count(const QString &column,
+                  Sensitive::Type sensitive = Sensitive::NotSet);
+
+    QString max(const QString &expr,
+                Sensitive::Type sensitive = Sensitive::NotSet);
+    QString min(const QString &expr,
+                Sensitive::Type sensitive = Sensitive::NotSet);
 
     enum class Default
     {

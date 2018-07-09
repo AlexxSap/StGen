@@ -98,7 +98,36 @@ AbsExprPointer StGenGlobal::notIn(QString name, QVariantList values)
                                  true);
 }
 
-QString StGenGlobal::count(const QString &column)
+QString StGenGlobal::count(const QString &column,
+                           StGenGlobal::Sensitive::Type sensitive)
 {
-    return QString("count(%1)").arg(column);
+    return QString("count(%1%2)")
+            .arg(StGenGlobal::Sensitive::typeToString(sensitive))
+            .arg(column);
+}
+
+QString StGenGlobal::Sensitive::typeToString(const StGenGlobal::Sensitive::Type &t)
+{
+    switch (t) {
+    case NotSet: return QString();
+    case All: return QString("all ");
+    case Distinct: return QString("distinct ");
+    }
+
+    return QString();
+}
+
+QString StGenGlobal::max(const QString &expr,
+                         StGenGlobal::Sensitive::Type sensitive)
+{
+    return QString("max(%1%2)")
+            .arg(StGenGlobal::Sensitive::typeToString(sensitive))
+            .arg(expr);
+}
+
+QString StGenGlobal::min(const QString &expr, StGenGlobal::Sensitive::Type sensitive)
+{
+    return QString("min(%1%2)")
+            .arg(StGenGlobal::Sensitive::typeToString(sensitive))
+            .arg(expr);
 }

@@ -27,6 +27,7 @@ private slots:
     void TestOrderBy();
     void TestGroupBy();
     void TestHaving();
+    void TestMinMax();
 };
 
 #endif // TSELECT_H
