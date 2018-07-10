@@ -17,7 +17,8 @@ SOURCES += \
     TBase.cpp \
     TCreate.cpp \
     TInsert.cpp \
-    TJoin.cpp
+    TJoin.cpp \
+    TUpdate.cpp
 
 HEADERS += \
     Utils.h \
@@ -26,6 +27,7 @@ HEADERS += \
     TBase.h \
     TCreate.h \
     TInsert.h \
-    TJoin.h
+    TJoin.h \
+    TUpdate.h
 
 include(../Core/Core.pri)

@@ -585,3 +585,31 @@ QString HavingCase::toQueryString() const
     if(isEmpty()) return QString();
     return " having " + CommonCase::toQueryString();
 }
+
+
+
+UpdateQuery::UpdateQuery(AbstractDataBaseInterface *base, QString tableName)
+    : AbstractExecuteQuery(base),
+      tableName_(std::move(tableName))
+{
+
+}
+
+UpdateQuery &UpdateQuery::set(QString colName, QVariant value)
+{
+    columns_ << qMakePair(std::move(colName), std::move(value));
+    return *this;
+}
+
+QString UpdateQuery::toQueryString() const
+{
+    QString result("update %1 set %2;");
+
+    QStringList sets;
+    foreach (auto& column, columns_)
+    {
+        sets << column.first + " = " + variantToString(column.second);
+    }
+
+    return result.arg(tableName_).arg(sets.join(", "));
+}

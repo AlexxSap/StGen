@@ -335,6 +335,20 @@ private:
     QList<QVariantList> values_;
 };
 
+class UpdateQuery  : public AbstractExecuteQuery
+{
+public:
+    UpdateQuery(AbstractDataBaseInterface* base,
+                QString tableName);
+
+    UpdateQuery& set(QString colName, QVariant value);
+    QString toQueryString() const override;
+
+private:
+    QString tableName_;
+    QList<QPair<QString, QVariant>> columns_;
+};
+
 class InsertQuery : public AbstractExecuteQuery
 {
 public:

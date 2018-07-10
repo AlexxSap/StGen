@@ -131,3 +131,8 @@ QString StGenGlobal::min(const QString &expr, StGenGlobal::Sensitive::Type sensi
             .arg(StGenGlobal::Sensitive::typeToString(sensitive))
             .arg(expr);
 }
+
+UpdateQuery StGenGlobal::update(QString tableName)
+{
+    return getBuilder()->update(std::move(tableName));
+}

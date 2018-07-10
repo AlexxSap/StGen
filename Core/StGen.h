@@ -10,7 +10,7 @@ public:
     virtual SelectQuery select(const ColumnsQuery &columns = ColumnsQuery()) = 0;
     virtual CreateTableQuery createTable(QString name) = 0;
     virtual InsertQuery insert(const ColumnsQuery &columns = ColumnsQuery()) = 0;
-
+    virtual UpdateQuery update(QString tableName) = 0;
 
 protected:
     AbstractDataBaseInterface* base_;
@@ -23,6 +23,7 @@ public:
     virtual SelectQuery select(const ColumnsQuery &columns = ColumnsQuery()) override;
     virtual CreateTableQuery createTable(QString name) override;
     virtual InsertQuery insert(const ColumnsQuery &columns = ColumnsQuery()) override;
+    virtual UpdateQuery update(QString tableName) override;
 
     template <typename... Args>
     SelectQuery select(Args ... args)

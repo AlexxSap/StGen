@@ -26,6 +26,8 @@ namespace StGenGlobal
         return getBuilder()->insert(ColumnsQuery(conv(args...)));
     }
 
+    UpdateQuery update(QString tableName);
+
     template <typename... Args>
     QString sum(Args ... args)
     {

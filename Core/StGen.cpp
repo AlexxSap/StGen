@@ -27,6 +27,11 @@ InsertQuery SqliteQueryBuilder::insert(const ColumnsQuery &columns)
     return InsertQuery(base_, columns);
 }
 
+UpdateQuery SqliteQueryBuilder::update(QString tableName)
+{
+    return UpdateQuery(base_, std::move(tableName));
+}
+
 AbstractSqlBuilder::AbstractSqlBuilder(AbstractDataBaseInterface *base)
     : base_(base)
 {

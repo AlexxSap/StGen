@@ -4,6 +4,7 @@
 #include <QStringList>
 #include <initializer_list>
 #include <QVariantList>
+#include <QDate>
 
 class VariantList : public QVariantList
 {
@@ -43,6 +44,8 @@ VariantList convVar(Args&& ... args)
     }
     return lst_;
 }
+
+QString variantToString(const QVariant &value);
 
 
 #endif // COMMON_H
