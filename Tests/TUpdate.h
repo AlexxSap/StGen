@@ -12,6 +12,7 @@ public:
 private slots:
     void TestSimpleUpdate();
     void TestUpdateWhere();
+    void TestUpdateFromBase();
 };
 
 #endif // TUPDATE_H

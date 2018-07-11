@@ -44,3 +44,32 @@ void TUpdate::TestUpdateWhere()
         QCOMPARE(actual, expected);
     }
 }
+
+void TUpdate::TestUpdateFromBase()
+{
+    DEFAULT_SQLITE_BASE("TestUpdateFromBase.db");
+
+    {
+        createTable("table1")
+                .addColumn("id", ColumnType::Integer())
+                .addColumn("value", ColumnType::String(5))
+                .exec();
+
+        insert("id", "value")
+                .into("table1")
+                .values(1, "aaaaa")
+                .values(2, "bbbbb")
+                .values(3, "ccccc")
+                .exec();
+    }
+
+    {
+        update("table1").set("value", "fffff").where(equal("id", 2)).exec();
+    }
+
+    {
+        const QueryResult result = select("value").from("table1").where(equal("id", 2)).exec();
+        QVERIFY(result.next());
+        QCOMPARE(result.value(0).toString(), "fffff");
+    }
+}
