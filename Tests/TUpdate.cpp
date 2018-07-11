@@ -33,3 +33,14 @@ void TUpdate::TestSimpleUpdate()
         QCOMPARE(actual, expected);
     }
 }
+
+void TUpdate::TestUpdateWhere()
+{
+    DEFAULT_NULL_CONNECTION();
+
+    {
+        const QString actual = update("table1").set("col1", "val").where(more("id", 13)).toQueryString();
+        const QString expected = "update table1 set col1 = 'val' where id > 13;";
+        QCOMPARE(actual, expected);
+    }
+}

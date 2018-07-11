@@ -601,9 +601,15 @@ UpdateQuery &UpdateQuery::set(QString colName, QVariant value)
     return *this;
 }
 
+UpdateQuery &UpdateQuery::where(WhereCase whereCond)
+{
+    whereExpr_ = std::move(whereCond);
+    return *this;
+}
+
 QString UpdateQuery::toQueryString() const
 {
-    QString result("update %1 set %2;");
+    QString result("update %1 set %2");
 
     QStringList sets;
     foreach (auto& column, columns_)
@@ -611,5 +617,8 @@ QString UpdateQuery::toQueryString() const
         sets << column.first + " = " + variantToString(column.second);
     }
 
-    return result.arg(tableName_).arg(sets.join(", "));
+    result = result.arg(tableName_).arg(sets.join(", ")) ;
+    result += whereExpr_.toQueryString();
+
+    return result + ";";
 }
