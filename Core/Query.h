@@ -351,6 +351,19 @@ private:
     WhereCase whereExpr_;
 };
 
+class DeleteFromTableQuery : public AbstractExecuteQuery
+{
+public:
+    DeleteFromTableQuery(AbstractDataBaseInterface* base,
+                QString tableName);
+    DeleteFromTableQuery& where(WhereCase whereCond);
+    QString toQueryString() const override;
+
+private:
+    QString tableName_;
+    WhereCase whereExpr_;
+};
+
 class InsertQuery : public AbstractExecuteQuery
 {
 public:

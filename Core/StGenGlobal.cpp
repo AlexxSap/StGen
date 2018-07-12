@@ -136,3 +136,8 @@ UpdateQuery StGenGlobal::update(QString tableName)
 {
     return getBuilder()->update(std::move(tableName));
 }
+
+DeleteFromTableQuery StGenGlobal::deleteFrom(QString name)
+{
+    return getBuilder()->deleteFrom(std::move(name));
+}

@@ -18,7 +18,8 @@ SOURCES += \
     TCreate.cpp \
     TInsert.cpp \
     TJoin.cpp \
-    TUpdate.cpp
+    TUpdate.cpp \
+    TDelete.cpp
 
 HEADERS += \
     Utils.h \
@@ -28,6 +29,7 @@ HEADERS += \
     TCreate.h \
     TInsert.h \
     TJoin.h \
-    TUpdate.h
+    TUpdate.h \
+    TDelete.h
 
 include(../Core/Core.pri)

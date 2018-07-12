@@ -71,6 +71,7 @@ void TSelect::TestSimpleSelectFromBase()
 
     {
         const QueryResult result = builder->select("id", "value").from("table1").exec();
+        QVERIFY(result.error().isEmpty());
         QHash<int, QString> actual;
         while(result.next())
         {
@@ -134,12 +135,12 @@ void TSelect::TestWhereIn()
     DEFAULT_NULL_CONNECTION();
     {
         const QString query = select().from("tableName").where(in("id", {1,2,3})).toQueryString();
-        const QString expected("select * from tableName where id in [1, 2, 3];");
+        const QString expected("select * from tableName where id in (1, 2, 3);");
         QCOMPARE(query, expected);
     }
     {
         const QString query = select().from("tableName").where(notIn("id", {1,2,3})).toQueryString();
-        const QString expected("select * from tableName where id not in [1, 2, 3];");
+        const QString expected("select * from tableName where id not in (1, 2, 3);");
         QCOMPARE(query, expected);
     }
 }
@@ -164,6 +165,7 @@ void TSelect::TestWhereInFromBase()
                 .from("table1")
                 .where(in("id", {1, 4}))
                 .exec();
+        QVERIFY(result.error().isEmpty());
 
         while(result.next())
         {
@@ -176,6 +178,7 @@ void TSelect::TestWhereInFromBase()
                 .from("table1")
                 .where(notIn("id", {2, 3}))
                 .exec();
+        QVERIFY(result.error().isEmpty());
 
         while(result.next())
         {
@@ -212,6 +215,7 @@ void TSelect::TestSimpleWhereWithBindFromBase()
         SelectQuery query = select("value").from("table1").where(equal("id", bind("id"))).prepare();
         query.bind("id", 2);
         const QueryResult result = query.exec();
+        QVERIFY(result.error().isEmpty());
 
         QVERIFY(result.next());
         QCOMPARE(result.value("value").toString(), "value2");
@@ -231,6 +235,7 @@ void TSelect::TestSimpleWhereWithBindFromBase()
         {
             query.bind("id", id);
             const QueryResult result = query.exec();
+
             QVERIFY(result.next());
             QCOMPARE(result.value("value").toString(), expected[id]);
         }

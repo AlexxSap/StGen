@@ -30,5 +30,5 @@ bool QueryResult::hasError() const
 
 QString QueryResult::error() const
 {
-    return query_->lastError().text();
+    return query_->lastError().text().simplified();
 }

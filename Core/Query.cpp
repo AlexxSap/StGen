@@ -560,7 +560,7 @@ InExpression::InExpression(QString name, QVariantList values, bool isNot)
 
 QString InExpression::toQueryString() const
 {
-    return name_ + (isNot_ ? " not" : "") + " in [" + values_.join(", ") + "]";
+    return name_ + (isNot_ ? " not" : "") + " in (" + values_.join(", ") + ")";
 }
 
 bool InExpression::isEmpty() const
@@ -618,6 +618,29 @@ QString UpdateQuery::toQueryString() const
     }
 
     result = result.arg(tableName_).arg(sets.join(", ")) ;
+    result += whereExpr_.toQueryString();
+
+    return result + ";";
+}
+
+DeleteFromTableQuery::DeleteFromTableQuery(AbstractDataBaseInterface *base, QString tableName)
+    : AbstractExecuteQuery(base),
+      tableName_(std::move(tableName))
+{
+
+}
+
+DeleteFromTableQuery &DeleteFromTableQuery::where(WhereCase whereCond)
+{
+    whereExpr_ = std::move(whereCond);
+    return *this;
+}
+
+QString DeleteFromTableQuery::toQueryString() const
+{
+    QString result("delete from ");
+
+    result += tableName_;
     result += whereExpr_.toQueryString();
 
     return result + ";";

@@ -8,6 +8,7 @@
 #include "TInsert.h"
 #include "TJoin.h"
 #include "TUpdate.h"
+#include "TDelete.h"
 
 #include <QDebug>
 
@@ -32,6 +33,8 @@ int main(int argc, char *argv[])
     tests += runTest<TInsert>();
     tests += runTest<TJoin>();
     tests += runTest<TUpdate>();
+    tests += runTest<TDelete>();
+
 
     return tests;
 }

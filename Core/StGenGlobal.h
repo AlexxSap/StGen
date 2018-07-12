@@ -76,6 +76,7 @@ namespace StGenGlobal
     QStringList defaultValue(const QString& value);
 
     CreateTableQuery createTable(QString name);
+    DeleteFromTableQuery deleteFrom(QString name);
 
     SimpleTypeOperation(equal)
     SimpleTypeOperation(notEqual)

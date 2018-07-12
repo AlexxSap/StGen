@@ -70,6 +70,8 @@ void TInsert::TestSimpleInsertToBase()
     expected.insert(3, "ccccc");
 
     const QueryResult result = select("id", "value").from("table1").exec();
+    QVERIFY(result.error().isEmpty());
+
     QHash<int, QString> actual;
     while(result.next())
     {
@@ -130,6 +132,8 @@ void TInsert::TestInsertFromSelectOnBase()
 
     {
         const QueryResult result = select("uid", "val").from("table2").exec();
+        QVERIFY(result.error().isEmpty());
+
         QHash<int, QString> actual;
         while(result.next())
         {
@@ -167,6 +171,7 @@ void TInsert::TestInsertWithBind()
 
     {
         const QueryResult result =  select("id", "value").from("table1").exec();
+        QVERIFY(result.error().isEmpty());
         QHash<int, QString> actual;
         while(result.next())
         {
@@ -200,6 +205,7 @@ void TInsert::TestInsertWithHalfBind()
 
     {
         const QueryResult result =  select("id", "value").from("table1").exec();
+        QVERIFY(result.error().isEmpty());
         QHash<int, QString> actual;
         while(result.next())
         {

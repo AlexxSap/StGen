@@ -69,6 +69,7 @@ void TUpdate::TestUpdateFromBase()
 
     {
         const QueryResult result = select("value").from("table1").where(equal("id", 2)).exec();
+        QVERIFY(result.error().isEmpty());
         QVERIFY(result.next());
         QCOMPARE(result.value(0).toString(), "fffff");
     }

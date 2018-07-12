@@ -32,6 +32,11 @@ UpdateQuery SqliteQueryBuilder::update(QString tableName)
     return UpdateQuery(base_, std::move(tableName));
 }
 
+DeleteFromTableQuery SqliteQueryBuilder::deleteFrom(QString tableName)
+{
+    return DeleteFromTableQuery(base_, std::move(tableName));
+}
+
 AbstractSqlBuilder::AbstractSqlBuilder(AbstractDataBaseInterface *base)
     : base_(base)
 {

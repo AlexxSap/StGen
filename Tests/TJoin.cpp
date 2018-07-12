@@ -31,6 +31,7 @@ void TJoin::TestSimpleInnerJoinFromBase()
             .addColumn("id", ColumnType::Integer())
             .addColumn("value", ColumnType::String(5))
             .exec();
+
     insert("id", "value").into("table1")
             .values(1, "aaaaa")
             .values(2, "bbbbb")
@@ -41,6 +42,7 @@ void TJoin::TestSimpleInnerJoinFromBase()
             .addColumn("uid", ColumnType::Integer())
             .addColumn("value", ColumnType::String(5))
             .exec();
+
     insert("uid","value").into("table2")
             .values(1, "11111")
             .values(3, "11111").exec();
@@ -49,6 +51,7 @@ void TJoin::TestSimpleInnerJoinFromBase()
                                       column("table2", "value", "v2"))
             .from("table1")
             .innerJoin("table2").on(equal("id", "uid")).exec();
+    QVERIFY(result.error().isEmpty());
 
     while(result.next())
     {

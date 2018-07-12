@@ -11,6 +11,7 @@ public:
     virtual CreateTableQuery createTable(QString name) = 0;
     virtual InsertQuery insert(const ColumnsQuery &columns = ColumnsQuery()) = 0;
     virtual UpdateQuery update(QString tableName) = 0;
+    virtual DeleteFromTableQuery deleteFrom(QString tableName) = 0;
 
 protected:
     AbstractDataBaseInterface* base_;
@@ -24,6 +25,7 @@ public:
     virtual CreateTableQuery createTable(QString name) override;
     virtual InsertQuery insert(const ColumnsQuery &columns = ColumnsQuery()) override;
     virtual UpdateQuery update(QString tableName) override;
+    virtual DeleteFromTableQuery deleteFrom(QString tableName) override;
 
     template <typename... Args>
     SelectQuery select(Args ... args)
