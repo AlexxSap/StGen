@@ -24,20 +24,6 @@ private:
     QStringList columns_;
 };
 
-class FromQuery : public AbstractQuery
-{
-public:
-    FromQuery();
-    FromQuery(const QString &tableName);
-    FromQuery(const char* tableName);
-
-    virtual QString toQueryString() const override;
-    bool isEmpty() const;
-
-private:
-    QString table_;
-};
-
 class AbstractExpression : public AbstractQuery
 {
 public:
@@ -133,6 +119,38 @@ public:
     virtual QString toQueryString() const override;
 };
 
+template <class Q>
+class WhereableQuery : public AbstractQuery
+{
+public:
+    Q& where(WhereCase whereCond)
+    {
+        whereExpr_ = std::move(whereCond);
+        return *static_cast<Q*>(this);
+    }
+
+    QString toQueryString() const override
+    {
+        return whereExpr_.toQueryString();
+    }
+
+private:
+    Q* sender_;
+    WhereCase whereExpr_;
+};
+
+class NamedTableQuery : public AbstractQuery
+{
+public:
+    NamedTableQuery(QString name = QString());
+    void setName(QString name);
+    bool isEmpty() const;
+    QString toQueryString() const override;
+
+private:
+    QString name_;
+};
+
 class HavingCase : public CommonCase
 {
 public:
@@ -149,19 +167,62 @@ public:
     virtual QString toQueryString() const override;
 };
 
-class AbstractExecuteQuery : public AbstractQuery
+template <class Q>
+class ExecutableQuery : public AbstractQuery
 {
 public:
-    AbstractExecuteQuery(AbstractDataBaseInterface* base);
-    QueryResult exec();
-    SqlQuery query() const;
+    ExecutableQuery(AbstractDataBaseInterface* base)
+        : base_(base)
+    {
 
-protected:
-    void prepare();
+    }
+    QueryResult exec()
+    {
+        if(query_.isNull())
+        {
+            prepare();
+        }
+
+        query_->exec();
+        base_->checkError(query_);
+        return QueryResult(query_);
+    }
+
+    SqlQuery query() const
+    {
+        return base_->query();
+    }
+
+    Q& prepare()
+    {
+        query_ = this->query();
+        query_->prepare(toQueryString());
+        base_->checkError(query_);
+
+        return *static_cast<Q*>(this);
+    }
 
 protected:
     AbstractDataBaseInterface* base_;
     SqlQuery query_;
+};
+
+template <class Q>
+class BindedExecutableQuery : public ExecutableQuery<Q>
+{
+public:
+    BindedExecutableQuery(AbstractDataBaseInterface* base)
+        : ExecutableQuery<Q>(base)
+    {
+
+    }
+
+    Q& bind(const QString& id,
+            const QVariant& value)
+    {
+        ExecutableQuery<Q>::query_->bindValue(":" + id, value);
+        return *static_cast<Q*>(this);
+    }
 };
 
 class SelectQuery;
@@ -202,24 +263,11 @@ private:
 class Group : public AbstractQuery
 {
 public:
-    void set(QStringList columns)
-    {
-        columns_ = std::move(columns);
-    }
-
-    virtual QString toQueryString() const
-    {
-        if(columns_.isEmpty())
-        {
-            return QString();
-        }
-
-        return " group by " + columns_.join(", ");
-    }
+    void set(QStringList columns);
+    virtual QString toQueryString() const;
 
 private:
     QStringList columns_;
-
 };
 
 class Order : public AbstractQuery
@@ -232,47 +280,26 @@ public:
         Desc
     };
 
-    Order() : AbstractQuery() {}
-
+    Order();
     void set(QStringList columns,
-             Type t)
-    {
-        columns_ = std::move(columns);
-        type_ = std::move(t);
-    }
-
-    virtual QString toQueryString() const
-    {
-        if(columns_.isEmpty())
-        {
-            return QString();
-        }
-
-        QString type;
-        switch (type_) {
-        case None: type = ""; break;
-        case Asc: type = " asc"; break;
-        case Desc: type = " desc"; break;
-        }
-
-        return " order by " + columns_.join(", ") + type;
-    }
+             Type t);
+    virtual QString toQueryString() const;
 
 private:
     QStringList columns_;
     Type type_;
 };
 
-class SelectQuery : public AbstractExecuteQuery
+class SelectQuery : public BindedExecutableQuery<SelectQuery>,
+        public WhereableQuery<SelectQuery>,
+        public NamedTableQuery
 {
 public:
     SelectQuery();
     SelectQuery(AbstractDataBaseInterface* base,
                 ColumnsQuery columns);
-    SelectQuery& from(FromQuery table);
-    SelectQuery& where(WhereCase whereCond);
+    SelectQuery& from(QString table);
     SelectQuery& having(HavingCase havingCond);
-    SelectQuery& prepare();
 
     SelectQuery& orderBy(QStringList columns, Order::Type type = Order::None);
     SelectQuery& orderBy(QString column, Order::Type type = Order::None);
@@ -280,8 +307,6 @@ public:
     SelectQuery& groupBy(QStringList columns);
     SelectQuery& groupBy(QString column);
 
-    SelectQuery& bind(const QString &id,
-                      const QVariant& value);
     bool isEmpty() const;
 
     virtual QString toQueryString() const override;
@@ -290,8 +315,6 @@ public:
 
 private:
     ColumnsQuery columns_;
-    FromQuery from_;
-    WhereCase whereExpr_;
     JoinQuery joinQuery_;
     Group group_;
     Order order_;
@@ -335,36 +358,33 @@ private:
     QList<QVariantList> values_;
 };
 
-class UpdateQuery : public AbstractExecuteQuery
+class UpdateQuery : public ExecutableQuery<UpdateQuery>,
+        public WhereableQuery<UpdateQuery>,
+        public NamedTableQuery
 {
 public:
     UpdateQuery(AbstractDataBaseInterface* base,
                 QString tableName);
 
     UpdateQuery& set(QString colName, QVariant value);
-    UpdateQuery& where(WhereCase whereCond);
     QString toQueryString() const override;
 
 private:
-    QString tableName_;
     QList<QPair<QString, QVariant>> columns_;
-    WhereCase whereExpr_;
 };
 
-class DeleteFromTableQuery : public AbstractExecuteQuery
+class DeleteFromTableQuery : public ExecutableQuery<DeleteFromTableQuery>,
+        public WhereableQuery<DeleteFromTableQuery>,
+        public NamedTableQuery
 {
 public:
     DeleteFromTableQuery(AbstractDataBaseInterface* base,
-                QString tableName);
-    DeleteFromTableQuery& where(WhereCase whereCond);
+                QString table);
     QString toQueryString() const override;
-
-private:
-    QString tableName_;
-    WhereCase whereExpr_;
 };
 
-class InsertQuery : public AbstractExecuteQuery
+class InsertQuery : public BindedExecutableQuery<InsertQuery>,
+        public NamedTableQuery
 {
 public:
     InsertQuery(AbstractDataBaseInterface* base,
@@ -391,19 +411,14 @@ public:
     InsertQuery& from(SelectQuery selectQuery);
     virtual QString toQueryString() const override;
 
-    InsertQuery& prepare();
-
-    InsertQuery& bind(const QString &id,
-                      const QVariant& value);
-
 private:
     ColumnsQuery columns_;
-    QString tableName_;
     Values values_;
     SelectQuery selectQuery_;
 };
 
-class CreateTableQuery : public AbstractExecuteQuery
+class CreateTableQuery : public ExecutableQuery<CreateTableQuery>,
+        public NamedTableQuery
 {
 public:
     CreateTableQuery(AbstractDataBaseInterface* base,
@@ -412,7 +427,6 @@ public:
                                 QString type,
                                 Flags flags = Flags());
     CreateTableQuery& addColumn(TableColumn column);
-    CreateTableQuery& prepare();
 
     template <typename... Args>
     CreateTableQuery& setPrimaryKey(Args ... args)
@@ -421,11 +435,9 @@ public:
         return *this;
     }
 
-
     virtual QString toQueryString() const override;
 
 private:
-    QString tableName_;
     QList<TableColumn> columns_;
     QStringList primary_;
 };

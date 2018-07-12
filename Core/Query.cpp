@@ -28,71 +28,29 @@ QString ColumnsQuery::toQueryString() const
     return columns_.isEmpty() ? "*" : columns_.join(", ");
 }
 
-FromQuery::FromQuery()
-    : AbstractQuery()
-{
-
-}
-
-FromQuery::FromQuery(const QString &tableName)
-    : AbstractQuery(),
-      table_(tableName)
-{
-
-}
-
-FromQuery::FromQuery(const char *tableName)
-    : AbstractQuery(),
-      table_(tableName)
-{
-
-}
-
-QString FromQuery::toQueryString() const
-{
-    return QString(" from %1").arg(table_);
-}
-
-bool FromQuery::isEmpty() const
-{
-    return table_.isEmpty();
-}
-
 SelectQuery::SelectQuery()
-    : AbstractExecuteQuery(nullptr)
+    : BindedExecutableQuery<SelectQuery>(nullptr)
 {
 
 }
 
 SelectQuery::SelectQuery(AbstractDataBaseInterface *base,
                          ColumnsQuery columns)
-    : AbstractExecuteQuery(base),
+    : BindedExecutableQuery<SelectQuery>(base),
       columns_(std::move(columns))
 {
 
 }
 
-SelectQuery &SelectQuery::from(FromQuery table)
+SelectQuery &SelectQuery::from(QString table)
 {
-    from_ = std::move(table);
-    return *this;
-}
-
-SelectQuery &SelectQuery::where(WhereCase whereCond)
-{
-    whereExpr_ = std::move(whereCond);
+    setName(std::move(table));
     return *this;
 }
 
 SelectQuery &SelectQuery::having(HavingCase havingCond)
 {
     havingExpr_ = std::move(havingCond);
-    return *this;
-}
-
-SelectQuery &SelectQuery::prepare()
-{
-    AbstractExecuteQuery::prepare();
     return *this;
 }
 
@@ -120,26 +78,19 @@ SelectQuery &SelectQuery::groupBy(QString column)
     return *this;
 }
 
-SelectQuery&  SelectQuery::bind(const QString &id, const QVariant &value)
-{
-    query_->bindValue(":" + id, value);
-
-    return *this;
-}
-
 bool SelectQuery::isEmpty() const
 {
-    return from_.isEmpty();
+    return NamedTableQuery::isEmpty();
 }
 
 QString SelectQuery::toQueryString() const
 {
     QString result = "select "
             + columns_.toQueryString()
-            + from_.toQueryString();
+            + " from " + NamedTableQuery::toQueryString();
 
     result += joinQuery_.toQueryString();
-    result += whereExpr_.toQueryString();
+    result += WhereableQuery<SelectQuery>::toQueryString();
     result += group_.toQueryString();
     result += order_.toQueryString();
     result += havingExpr_.toQueryString();
@@ -153,35 +104,6 @@ JoinQuery &SelectQuery::innerJoin(QString tableName)
     return std::ref(joinQuery_);
 }
 
-AbstractExecuteQuery::AbstractExecuteQuery(AbstractDataBaseInterface *base)
-    : base_(base)
-{
-
-}
-
-QueryResult AbstractExecuteQuery::exec()
-{
-    if(query_.isNull())
-    {
-        prepare();
-    }
-
-    query_->exec();
-    base_->checkError(query_);
-    return QueryResult(query_);
-}
-
-SqlQuery AbstractExecuteQuery::query() const
-{
-    return base_->query();
-}
-
-void AbstractExecuteQuery::prepare()
-{
-    query_ = this->query();
-    query_->prepare(toQueryString());
-    base_->checkError(query_);
-}
 
 ValueExpression::ValueExpression(QVariant value)
     : value_(std::move(value))
@@ -251,8 +173,8 @@ QString AbstractExpression::operationToString(const Operation& type) const
 
 CreateTableQuery::CreateTableQuery(AbstractDataBaseInterface *base,
                                    QString name)
-    : AbstractExecuteQuery(base),
-      tableName_(std::move(name))
+    : ExecutableQuery<CreateTableQuery>(base),
+      NamedTableQuery(std::move(name))
 {
 
 }
@@ -267,12 +189,6 @@ CreateTableQuery &CreateTableQuery::addColumn(QString name,
 CreateTableQuery &CreateTableQuery::addColumn(TableColumn column)
 {
     columns_.append(std::move(column));
-    return *this;
-}
-
-CreateTableQuery &CreateTableQuery::prepare()
-{
-    AbstractExecuteQuery::prepare();
     return *this;
 }
 
@@ -292,7 +208,7 @@ QString CreateTableQuery::toQueryString() const
     }
 
     return result
-            .arg(tableName_)
+            .arg(NamedTableQuery::toQueryString())
             .arg(lst.join(", "));
 }
 
@@ -332,7 +248,7 @@ QString TableColumn::toQueryString() const
 
 InsertQuery::InsertQuery(AbstractDataBaseInterface *base,
                          ColumnsQuery columns)
-    : AbstractExecuteQuery(base),
+    : BindedExecutableQuery<InsertQuery>(base),
       columns_(std::move(columns))
 {
 
@@ -340,7 +256,7 @@ InsertQuery::InsertQuery(AbstractDataBaseInterface *base,
 
 InsertQuery &InsertQuery::into(QString tableName)
 {
-    tableName_ = tableName;
+    setName(std::move(tableName));
     return *this;
 }
 
@@ -369,22 +285,9 @@ QString InsertQuery::toQueryString() const
         value = value.mid(0, value.size() - 1);
     }
 
-    return QString("insert into %1(%2) %3;").arg(tableName_)
+    return QString("insert into %1(%2) %3;").arg(NamedTableQuery::toQueryString())
             .arg(columns_.toQueryString())
             .arg(value);
-}
-
-InsertQuery &InsertQuery::prepare()
-{
-    AbstractExecuteQuery::prepare();
-    return *this;
-}
-
-InsertQuery &InsertQuery::bind(const QString &id,
-                               const QVariant &value)
-{
-    query_->bindValue(":" + id, value);
-    return *this;
 }
 
 Values &Values::operator <<(QVariantList values)
@@ -575,8 +478,8 @@ QString HavingCase::toQueryString() const
 
 
 UpdateQuery::UpdateQuery(AbstractDataBaseInterface *base, QString tableName)
-    : AbstractExecuteQuery(base),
-      tableName_(std::move(tableName))
+    : ExecutableQuery<UpdateQuery>(base),
+      NamedTableQuery(std::move(tableName))
 {
 
 }
@@ -584,12 +487,6 @@ UpdateQuery::UpdateQuery(AbstractDataBaseInterface *base, QString tableName)
 UpdateQuery &UpdateQuery::set(QString colName, QVariant value)
 {
     columns_ << qMakePair(std::move(colName), std::move(value));
-    return *this;
-}
-
-UpdateQuery &UpdateQuery::where(WhereCase whereCond)
-{
-    whereExpr_ = std::move(whereCond);
     return *this;
 }
 
@@ -603,31 +500,86 @@ QString UpdateQuery::toQueryString() const
         sets << column.first + " = " + variantToString(column.second);
     }
 
-    result = result.arg(tableName_).arg(sets.join(", ")) ;
-    result += whereExpr_.toQueryString();
+    result = result.arg(NamedTableQuery::toQueryString()).arg(sets.join(", ")) ;
+    result += WhereableQuery<UpdateQuery>::toQueryString();
 
     return result + ";";
 }
 
-DeleteFromTableQuery::DeleteFromTableQuery(AbstractDataBaseInterface *base, QString tableName)
-    : AbstractExecuteQuery(base),
-      tableName_(std::move(tableName))
+DeleteFromTableQuery::DeleteFromTableQuery(AbstractDataBaseInterface *base, QString table)
+    : ExecutableQuery<DeleteFromTableQuery>(base),
+      NamedTableQuery(std::move(table))
 {
 
-}
-
-DeleteFromTableQuery &DeleteFromTableQuery::where(WhereCase whereCond)
-{
-    whereExpr_ = std::move(whereCond);
-    return *this;
 }
 
 QString DeleteFromTableQuery::toQueryString() const
 {
     QString result("delete from ");
 
-    result += tableName_;
-    result += whereExpr_.toQueryString();
+    result += NamedTableQuery::toQueryString();
+    result += WhereableQuery<DeleteFromTableQuery>::toQueryString();
 
     return result + ";";
+}
+
+
+
+NamedTableQuery::NamedTableQuery(QString name)
+    : name_(std::move(name))
+{}
+
+void NamedTableQuery::setName(QString name)
+{
+    name_ = std::move(name);
+}
+
+bool NamedTableQuery::isEmpty() const
+{
+    return name_.isEmpty();
+}
+
+QString NamedTableQuery::toQueryString() const
+{
+    return name_;
+}
+
+Order::Order() : AbstractQuery() {}
+
+void Order::set(QStringList columns, Order::Type t)
+{
+    columns_ = std::move(columns);
+    type_ = std::move(t);
+}
+
+QString Order::toQueryString() const
+{
+    if(columns_.isEmpty())
+    {
+        return QString();
+    }
+
+    QString type;
+    switch (type_) {
+    case None: type = ""; break;
+    case Asc: type = " asc"; break;
+    case Desc: type = " desc"; break;
+    }
+
+    return " order by " + columns_.join(", ") + type;
+}
+
+void Group::set(QStringList columns)
+{
+    columns_ = std::move(columns);
+}
+
+QString Group::toQueryString() const
+{
+    if(columns_.isEmpty())
+    {
+        return QString();
+    }
+
+    return " group by " + columns_.join(", ");
 }
