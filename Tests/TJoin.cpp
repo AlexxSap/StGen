@@ -58,4 +58,5 @@ void TJoin::TestSimpleInnerJoinFromBase()
         QCOMPARE(result.value("v1").toString(), "aaaaa");
         QCOMPARE(result.value("v2").toString(), "11111");
     }
+    CHECK_DB_ERRORS();
 }

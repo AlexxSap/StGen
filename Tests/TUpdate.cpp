@@ -73,4 +73,5 @@ void TUpdate::TestUpdateFromBase()
         QVERIFY(result.next());
         QCOMPARE(result.value(0).toString(), "fffff");
     }
+    CHECK_DB_ERRORS();
 }

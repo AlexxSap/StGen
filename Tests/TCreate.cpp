@@ -62,6 +62,7 @@ void TCreate::TestSimpleCreateTableOnBase()
         }
         QCOMPARE(actual, expected);
     }
+    CHECK_DB_ERRORS();
 }
 
 void TCreate::TestPrimaryKey()

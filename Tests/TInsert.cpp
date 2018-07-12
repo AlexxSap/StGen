@@ -78,6 +78,7 @@ void TInsert::TestSimpleInsertToBase()
         actual.insert(result.value("id").toInt(), result.value("value").toString());
     }
     QCOMPARE(actual, expected);
+    CHECK_DB_ERRORS();
 }
 
 void TInsert::TestInsertFromSelect()
@@ -141,7 +142,7 @@ void TInsert::TestInsertFromSelectOnBase()
         }
         QCOMPARE(actual, expected);
     }
-
+    CHECK_DB_ERRORS();
 }
 
 void TInsert::TestInsertWithBind()
@@ -179,6 +180,7 @@ void TInsert::TestInsertWithBind()
         }
         QCOMPARE(actual, expected);
     }
+    CHECK_DB_ERRORS();
 }
 
 void TInsert::TestInsertWithHalfBind()
@@ -214,4 +216,5 @@ void TInsert::TestInsertWithHalfBind()
         QCOMPARE(actual.keys().toSet(), expected);
         QCOMPARE(actual.values().toSet(), QSet<QString>{"aaaaa"});
     }
+    CHECK_DB_ERRORS();
 }

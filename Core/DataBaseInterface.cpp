@@ -94,3 +94,21 @@ QString SqliteInterface::driverID() const
     return "QSQLITE";
 }
 
+
+void AbstractDataBaseInterface::checkError(const SqlQuery &query)
+{
+    if(query->lastError().type() != QSqlError::NoError)
+    {
+        errorList_ << query->lastError();
+    }
+}
+
+QList<QSqlError> AbstractDataBaseInterface::errors() const
+{
+    return errorList_;
+}
+
+bool AbstractDataBaseInterface::hasNoError() const
+{
+    return errorList_.isEmpty();
+}

@@ -62,4 +62,5 @@ void TDelete::TestSimpleDeleteFromBase()
         QCOMPARE(result.value(0).toString(), "bbbbb");
         QVERIFY(!result.next());
     }
+    CHECK_DB_ERRORS();
 }

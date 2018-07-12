@@ -22,6 +22,8 @@ public:
     StGenGlobal::setBuilder(StGen::createSqlBuilder(&b)); \
     using namespace StGenGlobal;
 
+#define CHECK_DB_ERRORS() QVERIFY(b.hasNoError());
+
 #define DEFAULT_NULL_CONNECTION() StGenGlobal::setBuilder(StGen::createSqlBuilder(nullptr)); \
     using namespace StGenGlobal;
 

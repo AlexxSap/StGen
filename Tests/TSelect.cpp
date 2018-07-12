@@ -79,7 +79,7 @@ void TSelect::TestSimpleSelectFromBase()
         }
         QCOMPARE(actual, expected);
     }
-
+    CHECK_DB_ERRORS();
 }
 
 void TSelect::TestSimpleWhere()
@@ -185,6 +185,7 @@ void TSelect::TestWhereInFromBase()
             QCOMPARE(result.value("value").toString(), "aaaaa");
         }
     }
+    CHECK_DB_ERRORS();
 }
 
 void TSelect::TestSimpleWhereWithBind()
@@ -241,6 +242,7 @@ void TSelect::TestSimpleWhereWithBindFromBase()
         }
 
     }
+    CHECK_DB_ERRORS();
 }
 
 void TSelect::TestComplexWhere()

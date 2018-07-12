@@ -165,11 +165,9 @@ QueryResult AbstractExecuteQuery::exec()
     {
         prepare();
     }
-    if(!query_->exec())
-    {
-        qWarning() << query_->lastError();
-    }
-    qInfo() << "exec" << query_->lastQuery();
+
+    query_->exec();
+    base_->checkError(query_);
     return QueryResult(query_);
 }
 
@@ -181,21 +179,9 @@ SqlQuery AbstractExecuteQuery::query() const
 void AbstractExecuteQuery::prepare()
 {
     query_ = this->query();
-    if(!query_->prepare(toQueryString()))
-    {
-        qWarning() << query_->lastError();
-    }
-
-    qInfo() << query_->lastQuery();
+    query_->prepare(toQueryString());
+    base_->checkError(query_);
 }
-
-
-
-
-
-
-
-
 
 ValueExpression::ValueExpression(QVariant value)
     : value_(std::move(value))

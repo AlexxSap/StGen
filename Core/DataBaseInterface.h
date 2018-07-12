@@ -28,6 +28,13 @@ class AbstractDataBaseInterface
 {
 public:
     virtual SqlQuery query() const = 0;
+
+    void checkError(const SqlQuery &query);
+    QList<QSqlError> errors() const;
+    bool hasNoError() const;
+
+private:
+    QList<QSqlError> errorList_;
 };
 
 class DataBaseInterface : public AbstractDataBaseInterface
